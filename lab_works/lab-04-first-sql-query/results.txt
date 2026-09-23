@@ -1,0 +1,269 @@
+Lab 04 — First SQL Query
+
+==================================================
+1. CREATE TABLE
+==================================================
+
+Command:
+
+CREATE TABLE students (
+    student_id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(150),
+    faculty VARCHAR(100)
+);
+
+Result:
+
+CREATE TABLE
+
+
+==================================================
+2. INSERT DATA
+==================================================
+
+Command:
+
+INSERT INTO students (name, email, faculty)
+VALUES
+    ('Alymbek', 'alymbek@example.com', 'COMSEH'),
+    ('Timur', 'timur@example.com', 'MED'),
+    ('Beka', 'beka@example.com', 'MAT');
+
+Result:
+
+INSERT 0 3
+
+
+==================================================
+3. SELECT *
+==================================================
+
+Command:
+
+SELECT * FROM students;
+
+Result:
+
+ student_id |   name   |         email          | faculty
+------------+----------+------------------------+---------
+          1 | Alymbek  | alymbek@example.com    | COMSEH
+          2 | Timur    | timur@example.com      | MED
+          3 | Beka     | beka@example.com       | MAT
+(3 rows)
+
+
+==================================================
+4. SELECT SPECIFIC COLUMNS
+==================================================
+
+Command:
+
+SELECT name, email FROM students;
+
+Result:
+
+   name   |         email
+----------+------------------------
+ Alymbek  | alymbek@example.com
+ Timur    | timur@example.com
+ Beka     | beka@example.com
+(3 rows)
+
+
+==================================================
+5. SELECT student_id, faculty
+==================================================
+
+Command:
+
+SELECT student_id, faculty FROM students;
+
+Result:
+
+ student_id | faculty
+------------+---------
+          1 | COMSEH
+          2 | MED
+          3 | MAT
+(3 rows)
+
+
+==================================================
+6. WHERE
+==================================================
+
+Command:
+
+SELECT name, email
+FROM students
+WHERE name = 'Timur';
+
+Result:
+
+ name  |       email
+-------+--------------------
+ Timur | timur@example.com
+(1 row)
+
+
+==================================================
+7. WHERE WITH FACULTY
+==================================================
+
+Command:
+
+SELECT name, email
+FROM students
+WHERE faculty = 'COM-25';
+
+Result:
+
+(0 rows)
+
+
+==================================================
+8. ORDER BY ASC
+==================================================
+
+Command:
+
+SELECT name, email
+FROM students
+ORDER BY name;
+
+Result:
+
+   name   |         email
+----------+------------------------
+ Alymbek  | alymbek@example.com
+ Beka     | beka@example.com
+ Timur    | timur@example.com
+(3 rows)
+
+
+==================================================
+9. ORDER BY DESC
+==================================================
+
+Command:
+
+SELECT name, email
+FROM students
+ORDER BY name DESC;
+
+Result:
+
+   name   |         email
+----------+------------------------
+ Timur    | timur@example.com
+ Beka     | beka@example.com
+ Alymbek  | alymbek@example.com
+(3 rows)
+
+
+==================================================
+10. LIMIT
+==================================================
+
+Command:
+
+SELECT name, email
+FROM students
+LIMIT 2;
+
+Result:
+
+   name   |         email
+----------+------------------------
+ Alymbek  | alymbek@example.com
+ Timur    | timur@example.com
+(2 rows)
+
+
+==================================================
+11. SINGLE-LINE COMMENT
+==================================================
+
+Command:
+
+-- This query retrieves all students from the Engineering faculty.
+
+SELECT name, faculty
+FROM students
+WHERE faculty = 'Engineering';
+
+Result:
+
+(0 rows)
+
+
+==================================================
+12. MULTI-LINE COMMENT
+==================================================
+
+Command:
+
+/*
+This is a multi-line comment.
+It can span multiple lines for detailed explanations.
+*/
+
+SELECT name, email
+FROM students;
+
+Result:
+
+   name   |         email
+----------+------------------------
+ Alymbek  | alymbek@example.com
+ Timur    | timur@example.com
+ Beka     | beka@example.com
+(3 rows)
+
+
+==================================================
+13. CLEANUP
+==================================================
+
+Command:
+
+DROP TABLE students;
+
+Result:
+
+DROP TABLE
+
+
+==================================================
+14. CHECK TABLES
+==================================================
+
+Command:
+
+\dt
+
+Result:
+
+Existing tables in database:
+
+customers
+employee
+order_items
+orders
+products
+users
+users1
+
+
+==================================================
+15. EXIT
+==================================================
+
+Command:
+
+\q
+
+Result:
+
+Exited PostgreSQL.
