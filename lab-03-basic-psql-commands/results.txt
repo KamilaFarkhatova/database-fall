@@ -1,0 +1,221 @@
+Lab 03 — Basic psql Commands
+
+1. Connection
+
+Command:
+psql -h localhost -p 5432 -U postgres -d postgres
+
+Result:
+Successfully connected to PostgreSQL database "postgres" as user "postgres".
+
+
+2. List all databases
+
+Command:
+\l
+
+Result:
+
+                                                      List of databases
+         Name         |  Owner   | Encoding | Locale Provider | Collate | Ctype | Locale | ICU Rules |   Access privileges
+----------------------+----------+----------+-----------------+---------+-------+--------+-----------+-----------------------
+ dvd_rental           | postgres | UTF8     | libc            | C       | C     |        |
+ dvd_rental_hw        | postgres | UTF8     | libc            | C       | C     |        |
+ postgres             | postgres | UTF8     | libc            | C       | C     |        |
+ postgres_advanced_hw | postgres | UTF8     | libc            | C       | C     |        |
+ solveway             | postgres | UTF8     | libc            | C       | C     |        |
+ template0            | postgres | UTF8     | libc            | C       | C     |        |           | =c/postgres +
+                      |          |          |                 |         |       |        |           | postgres=CTc/postgres
+ template1            | postgres | UTF8     | libc            | C       | C     |        |           | =c/postgres
+ test_db              | postgres | UTF8     | libc            | C       | C     |        |
+(8 rows)
+
+
+3. Connect to database
+
+Command:
+\c postgres
+
+Result:
+You are now connected to database "postgres" as user "postgres".
+
+
+4. List tables
+
+Command:
+\dt
+
+Result:
+
+            List of relations
+ Schema |    Name     | Type  |  Owner
+--------+-------------+-------+----------
+ public | customers   | table | postgres
+ public | employee    | table | postgres
+ public | order_items | table | postgres
+ public | orders      | table | postgres
+ public | products    | table | postgres
+ public | users       | table | postgres
+ public | users1      | table | postgres
+(7 rows)
+
+
+5. List all relations
+
+Command:
+\d
+
+Result:
+
+                    List of relations
+ Schema |           Name            |   Type   |  Owner
+--------+---------------------------+----------+----------
+ public | customers                 | table    | postgres
+ public | customers_customer_id_seq | sequence | postgres
+ public | employee                  | table    | postgres
+ public | employee_employee_id_seq  | sequence | postgres
+ public | order_items               | table    | postgres
+ public | order_items_item_id_seq   | sequence | postgres
+ public | orders                    | table    | postgres
+ public | orders_order_id_seq       | sequence | postgres
+ public | products                  | table    | postgres
+ public | products_product_id_seq   | sequence | postgres
+ public | users                     | table    | postgres
+ public | users1                    | table    | postgres
+ public | users1_id_seq             | sequence | postgres
+ public | users_id_seq              | sequence | postgres
+(14 rows)
+
+
+6. Create students table
+
+Command:
+
+CREATE TABLE students (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    age INT
+);
+
+Result:
+CREATE TABLE
+
+
+7. List tables after creating students
+
+Command:
+\dt
+
+Result:
+
+            List of relations
+ Schema |    Name     | Type  |  Owner
+--------+-------------+-------+----------
+ public | customers   | table | postgres
+ public | employee    | table | postgres
+ public | order_items | table | postgres
+ public | orders      | table | postgres
+ public | products    | table | postgres
+ public | students    | table | postgres
+ public | users       | table | postgres
+ public | users1      | table | postgres
+(8 rows)
+
+
+8. Describe students table
+
+Command:
+\d students
+
+Result:
+
+                                    Table "public.students"
+
+ Column |          Type          | Collation | Nullable |              Default
+--------+------------------------+-----------+----------+--------------------------------------
+ id     | integer               |           | not null | nextval('students_id_seq'::regclass)
+ name   | character varying(100) |           |          |
+ age    | integer               |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (id)
+
+
+9. Insert data
+
+Command:
+
+INSERT INTO students (name, age)
+VALUES ('Alice', 21), ('Bob', 23);
+
+Result:
+INSERT 0 2
+
+
+10. Select data
+
+Command:
+SELECT * FROM students;
+
+Result:
+
+ id | name  | age
+----+-------+-----
+  1 | Alice |  21
+  2 | Bob   |  23
+(2 rows)
+
+
+11. SQL command help
+
+Command:
+\h
+
+Result:
+PostgreSQL SQL command help was displayed successfully.
+
+
+12. psql meta-command help
+
+Command:
+\?
+
+Result:
+The psql meta-command help was displayed successfully.
+
+
+13. Drop students table
+
+Command:
+DROP TABLE students;
+
+Result:
+DROP TABLE
+
+
+14. Verify that students table was removed
+
+Command:
+\dt
+
+Result:
+
+            List of relations
+ Schema |    Name     | Type  |  Owner
+--------+-------------+-------+----------
+ public | customers   | table | postgres
+ public | employee    | table | postgres
+ public | order_items | table | postgres
+ public | orders      | table | postgres
+ public | products    | table | postgres
+ public | users       | table | postgres
+ public | users1      | table | postgres
+(7 rows)
+
+
+15. Exit psql
+
+Command:
+\q
+
+Result:
+Successfully exited psql.
