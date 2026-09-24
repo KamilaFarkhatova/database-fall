@@ -1,0 +1,62 @@
+Lab 05: Databases
+
+1. Create database
+
+Command:
+CREATE DATABASE university;
+
+Result:
+CREATE DATABASE
+
+
+3. Verify database creation
+
+Command:
+\l
+
+Result:
+The university database was successfully created and appeared in the database list.
+
+
+4. Connect to university
+
+Command:
+\c university
+
+Result:
+You are now connected to database "university" as user "postgres".
+
+
+5. Switch back to postgres
+
+Command:
+\c postgres
+
+Result:
+You are now connected to database "postgres" as user "postgres".
+
+
+6. Drop database
+
+Command:
+DROP DATABASE university;
+
+Result:
+DROP DATABASE
+
+
+7. Verify database deletion
+
+Command:
+\l
+
+Result:
+The university database was successfully removed and no longer appeared in the database list.
+
+Conclusion:
+The Lab 05 tasks were completed successfully:
+- Created a database using CREATE DATABASE.
+- Connected to the database using \c.
+- Switched back to the postgres database.
+- Deleted the database using DROP DATABASE.
+- Verified the results using \l.
