@@ -1,0 +1,248 @@
+Lab 06: Tables, Data Types and Constraints
+Student: Kamila Farkhatova
+
+
+1. CREATE TABLE students
+
+Command:
+CREATE TABLE students (
+    student_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    faculty VARCHAR(100)
+);
+
+Result:
+CREATE TABLE
+
+
+\d students
+
+                                          Table "public.students"
+   Column   |          Type          | Collation | Nullable |                   Default
+------------+------------------------+-----------+----------+----------------------------------------------
+ student_id | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name | character varying(50)  |           | not null |
+ last_name  | character varying(50)  |           | not null |
+ email      | character varying(100) |           | not null |
+ faculty    | character varying(100) |           |          |
+
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+2. DROP TABLE test_table
+
+Command:
+CREATE TABLE test_table (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50)
+);
+
+Result:
+CREATE TABLE
+
+Command:
+DROP TABLE test_table;
+
+Result:
+DROP TABLE
+
+
+3. DROP TABLE IF EXISTS
+
+Command:
+DROP TABLE IF EXISTS test_table;
+
+Result:
+NOTICE:  table "test_table" does not exist, skipping
+DROP TABLE
+
+
+4. ADD COLUMN date_of_birth
+
+Command:
+ALTER TABLE students
+ADD COLUMN date_of_birth DATE;
+
+Result:
+ALTER TABLE
+
+
+\d students
+
+                                           Table "public.students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | character varying(50)  |           | not null |
+ last_name     | character varying(50)  |           | not null |
+ email         | character varying(100) |           | not null |
+ faculty       | character varying(100) |           |          |
+ date_of_birth | date                   |           |          |
+
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+5. DROP COLUMN faculty
+
+Command:
+ALTER TABLE students
+DROP COLUMN faculty;
+
+Result:
+ALTER TABLE
+
+
+\d students
+
+                                           Table "public.students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name   | character varying(50)  |           | not null |
+ last_name    | character varying(50)  |           | not null |
+ email        | character varying(100) |           | not null |
+ date_of_birth | date                   |           |          |
+
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+6. CHANGE COLUMN DATA TYPE
+
+Command:
+ALTER TABLE students
+ALTER COLUMN first_name TYPE TEXT;
+
+Result:
+ALTER TABLE
+
+
+\d students
+
+                                           Table "public.students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | text                   |           | not null |
+ last_name     | character varying(50)  |           | not null |
+ email         | character varying(100) |           | not null |
+ date_of_birth | date                   |           |          |
+
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+7. ADD CONSTRAINT
+
+Command:
+ALTER TABLE students
+ADD CONSTRAINT unique_student_email UNIQUE (email);
+
+Result:
+ALTER TABLE
+
+
+8. RENAME COLUMN
+
+Command:
+ALTER TABLE students
+RENAME COLUMN email TO email_address;
+
+Result:
+ALTER TABLE
+
+
+9. RENAME TABLE
+
+Command:
+ALTER TABLE students
+RENAME TO university_students;
+
+Result:
+ALTER TABLE
+
+
+\d university_students
+
+                                      Table "public.university_students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | text                   |           | not null |
+ last_name     | character varying(50)  |           | not null |
+ email_address | character varying(100) |           | not null |
+ date_of_birth | date                   |           |          |
+
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email_address)
+    "unique_student_email" UNIQUE CONSTRAINT, btree (email_address)
+
+
+10. CREATE TEMP TABLE
+
+Command:
+CREATE TEMP TABLE temp_students (
+    id SERIAL,
+    name VARCHAR(50)
+);
+
+Result:
+CREATE TABLE
+
+
+\d temp_students
+
+                                 Table "pg_temp_25.temp_students"
+ Column |         Type          | Collation | Nullable |                  Default
+--------+-----------------------+-----------+----------+-------------------------------------------
+ id     | integer               |           | not null | nextval('temp_students_id_seq'::regclass)
+ name   | character varying(50) |           |          |
+
+
+11. DROP TABLE university_students
+
+Command:
+DROP TABLE university_students;
+
+Result:
+DROP TABLE
+
+
+\dt
+
+               List of relations
+   Schema   |     Name      | Type  |  Owner
+------------+---------------+-------+----------
+ pg_temp_25 | temp_students | table | postgres
+ public     | customers     | table | postgres
+ public     | employee      | table | postgres
+ public     | order_items   | table | postgres
+ public     | orders        | table | postgres
+ public     | products      | table | postgres
+ public     | users         | table | postgres
+ public     | users1         | table | postgres
+(8 rows)
+
+
+12. TEMP TABLE AFTER SESSION END
+
+The PostgreSQL session was closed using:
+
+\q
+
+A new PostgreSQL session was opened.
+
+Command:
+\d temp_students
+
+Result:
+Did not find any relation named "temp_students".
