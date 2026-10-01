@@ -1,0 +1,427 @@
+LAB 07 — PRIMARY KEYS
+
+1. COLUMN-LEVEL PRIMARY KEY
+
+Command:
+
+CREATE TABLE students (
+    student_id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(150)
+);
+
+Result:
+
+CREATE TABLE
+
+\d students
+
+Table "public.students"
+
+   Column   |          Type          | Collation | Nullable | Default
+------------+------------------------+-----------+----------+---------
+ student_id | integer                |           | not null |
+ name       | character varying(100) |           |          |
+ email      | character varying(150) |           |          |
+
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+
+Result: PRIMARY KEY successfully created at column level.
+
+
+2. TABLE-LEVEL PRIMARY KEY
+
+Command:
+
+CREATE TABLE students (
+    student_id INTEGER,
+    name VARCHAR(100),
+    email VARCHAR(150),
+    PRIMARY KEY (student_id)
+);
+
+Result:
+
+CREATE TABLE
+
+\d students
+
+Table "public.students"
+
+   Column   |          Type          | Collation | Nullable | Default
+------------+------------------------+-----------+----------+---------
+ student_id | integer                |           | not null |
+ name       | character varying(100) |           |          |
+ email      | character varying(150) |           |          |
+
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+
+Result: PRIMARY KEY successfully created at table level.
+
+
+3. NAMED PRIMARY KEY CONSTRAINT
+
+Command:
+
+CREATE TABLE students (
+    student_id INTEGER,
+    name VARCHAR(100),
+    email VARCHAR(150),
+    CONSTRAINT pk_students PRIMARY KEY (student_id)
+);
+
+Result:
+
+CREATE TABLE
+
+\d students
+
+Table "public.students"
+
+   Column   |          Type          | Collation | Nullable | Default
+------------+------------------------+-----------+----------+---------
+ student_id | integer                |           | not null |
+ name       | character varying(100) |           |          |
+ email      | character varying(150) |           |          |
+
+Indexes:
+    "pk_students" PRIMARY KEY, btree (student_id)
+
+Result: Named PRIMARY KEY constraint successfully created.
+
+
+4. ADDING PRIMARY KEY TO AN EXISTING TABLE
+
+Command:
+
+CREATE TABLE students_no_pk (
+    student_id INTEGER,
+    name VARCHAR(100),
+    email VARCHAR(150)
+);
+
+Result:
+
+CREATE TABLE
+
+Initial structure:
+
+   Column   |          Type          | Collation | Nullable | Default
+------------+------------------------+-----------+----------+---------
+ student_id | integer                |           |          |
+ name       | character varying(100) |           |          |
+ email      | character varying(150) |           |          |
+
+Command:
+
+ALTER TABLE students_no_pk
+ADD CONSTRAINT pk_students PRIMARY KEY (student_id);
+
+Result:
+
+ALTER TABLE
+
+\d students_no_pk
+
+Table "public.students_no_pk"
+
+   Column   |          Type          | Collation | Nullable | Default
+------------+------------------------+-----------+----------+---------
+ student_id | integer                |           | not null |
+ name       | character varying(100) |           |          |
+ email      | character varying(150) |           |          |
+
+Indexes:
+    "pk_students" PRIMARY KEY, btree (student_id)
+
+Result: PRIMARY KEY successfully added to an existing table.
+
+
+5. SINGLE-COLUMN PRIMARY KEY WITH SERIAL
+
+Command:
+
+CREATE TABLE students (
+    student_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE,
+    faculty VARCHAR(50)
+);
+
+Result:
+
+CREATE TABLE
+
+Inserted 3 rows.
+
+\d students
+
+Table "public.students"
+
+   Column   |          Type          | Collation | Nullable | Default
+------------+------------------------+-----------+----------+----------------------------------------------
+ student_id | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ name       | character varying(100) |           | not null |
+ email      | character varying(150) |           |          |
+ faculty    | character varying(50)  |           |          |
+
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+SELECT * FROM students;
+
+ student_id |     name      |        email        |     faculty
+-------------+---------------+---------------------+------------------
+           1 | Alice Johnson | alice@alatoo.edu.kg | Computer Science
+           2 | Bob Smith     | bob@alatoo.edu.kg   | Mathematics
+           3 | Carol Davis   | carol@alatoo.edu.kg | Computer Science
+
+(3 rows)
+
+Result: SERIAL automatically generated primary key values 1, 2, and 3.
+
+
+6. COMPOSITE PRIMARY KEY
+
+Command:
+
+CREATE TABLE course_enrollments (
+    student_id INTEGER,
+    course_id INTEGER,
+    semester VARCHAR(20),
+    enrollment_date DATE DEFAULT CURRENT_DATE,
+    grade CHAR(2),
+    PRIMARY KEY (student_id, course_id, semester)
+);
+
+Result:
+
+CREATE TABLE
+
+Inserted 4 rows.
+
+SELECT * FROM course_enrollments;
+
+ student_id | course_id |  semester   | enrollment_date | grade
+-------------+-----------+-------------+-----------------+-------
+           1 |       101 | 2024-Spring | 2026-10-01      | A
+           1 |       102 | 2024-Spring | 2026-10-01      | B+
+           2 |       101 | 2024-Spring | 2026-10-01      | A-
+           1 |       101 | 2024-Fall   | 2026-10-01      | A+
+
+(4 rows)
+
+\d course_enrollments
+
+Table "public.course_enrollments"
+
+     Column      |         Type          | Collation | Nullable |   Default
+-----------------+-----------------------+-----------+----------+--------------
+ student_id      | integer               |           | not null |
+ course_id       | integer               |           | not null |
+ semester        | character varying(20) |           | not null |
+ enrollment_date | date                  |           |          | CURRENT_DATE
+ grade           | character(2)          |           |          |
+
+Indexes:
+    "course_enrollments_pkey" PRIMARY KEY, btree (student_id, course_id, semester)
+
+Result: Composite PRIMARY KEY successfully created using
+student_id, course_id, and semester.
+
+
+7. SERIAL
+
+Command:
+
+CREATE TABLE products_lab7 (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2)
+);
+
+Result:
+
+CREATE TABLE
+
+\d products_lab7
+
+Table "public.products_lab7"
+
+    Column    |          Type          | Collation | Nullable | Default
+--------------+------------------------+-----------+----------+---------------------------------------------------
+ product_id   | integer                |           | not null | nextval('products_lab7_product_id_seq'::regclass)
+ product_name | character varying(100) |           | not null |
+ price        | numeric(10,2)          |           |          |
+
+Indexes:
+    "products_lab7_pkey" PRIMARY KEY, btree (product_id)
+
+Result: SERIAL created an integer column with an automatic sequence.
+
+
+8. BIGSERIAL
+
+Command:
+
+CREATE TABLE transactions (
+    transaction_id BIGSERIAL PRIMARY KEY,
+    amount DECIMAL(15,2),
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Result:
+
+CREATE TABLE
+
+\d transactions
+
+Table "public.transactions"
+
+      Column      |            Type             | Collation | Nullable | Default
+------------------+-----------------------------+-----------+----------+------------------------------------------------------
+ transaction_id   | bigint                      |           | not null | nextval('transactions_transaction_id_seq'::regclass)
+ amount           | numeric(15,2)               |           |          |
+ transaction_date | timestamp without time zone |           |          | CURRENT_TIMESTAMP
+
+Indexes:
+    "transactions_pkey" PRIMARY KEY, btree (transaction_id)
+
+Result: BIGSERIAL created a bigint column with an automatic sequence.
+
+
+9. GENERATED ALWAYS AS IDENTITY
+
+Command:
+
+CREATE TABLE orders_lab7 (
+    order_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    customer_name VARCHAR(100),
+    order_date DATE DEFAULT CURRENT_DATE
+);
+
+Result:
+
+CREATE TABLE
+
+\d orders_lab7
+
+Table "public.orders_lab7"
+
+     Column     |          Type          | Collation | Nullable | Default
+----------------+-----------------------+-----------+----------+------------------------------
+ order_id       | integer               |           | not null | generated always as identity
+ customer_name  | character varying(100) |           |          |
+ order_date     | date                  |           |          | CURRENT_DATE
+
+Indexes:
+    "orders_lab7_pkey" PRIMARY KEY, btree (order_id)
+
+Result: GENERATED ALWAYS AS IDENTITY successfully created.
+
+
+10. GENERATED BY DEFAULT AS IDENTITY
+
+Command:
+
+CREATE TABLE customers_lab7 (
+    customer_id INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    customer_name VARCHAR(100),
+    email VARCHAR(150)
+);
+
+Result:
+
+CREATE TABLE
+
+\d customers_lab7
+
+Table "public.customers_lab7"
+
+    Column    |          Type          | Collation | Nullable | Default
+--------------+------------------------+-----------+----------+----------------------------------
+ customer_id | integer                |           | not null | generated by default as identity
+ customer_name | character varying(100) |           |          |
+ email       | character varying(150) |           |          |
+
+Indexes:
+    "customers_lab7_pkey" PRIMARY KEY, btree (customer_id)
+
+Manual insert:
+
+INSERT INTO customers_lab7
+    (customer_id, customer_name, email)
+VALUES
+    (1000, 'VIP Customer', 'vip@example.com');
+
+Result:
+
+INSERT 0 1
+
+SELECT * FROM customers_lab7;
+
+ customer_id | customer_name |      email
+--------------+---------------+-----------------
+         1000 | VIP Customer  | vip@example.com
+
+(1 row)
+
+Result: GENERATED BY DEFAULT AS IDENTITY allows an explicitly
+specified value to be inserted.
+
+
+11. PRIMARY KEY CONSTRAINTS
+
+Command:
+
+CREATE TABLE departments_lab7 (
+    dept_id INTEGER PRIMARY KEY,
+    dep_name VARCHAR(100)
+);
+
+Result:
+
+CREATE TABLE
+
+First insert:
+
+INSERT INTO departments_lab7
+VALUES
+    (1, 'Computer Science');
+
+Result:
+
+INSERT 0 1
+
+Duplicate primary key test:
+
+INSERT INTO departments_lab7
+VALUES
+    (1, 'Mathematics');
+
+Result:
+
+ERROR: duplicate key value violates unique constraint
+"departments_lab7_pkey"
+
+DETAIL:
+Key (dept_id)=(1) already exists.
+
+NULL primary key test:
+
+INSERT INTO departments_lab7
+VALUES
+    (NULL, 'Physics');
+
+Result:
+
+ERROR: null value in column "dept_id" of relation
+"departments_lab7" violates not-null constraint
+
+DETAIL:
+Failing row contains (null, Physics).
+
+Result: PRIMARY KEY prevents duplicate and NULL values.
