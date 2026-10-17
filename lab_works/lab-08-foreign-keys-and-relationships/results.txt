@@ -1,0 +1,570 @@
+# Lab 08 — Foreign Keys and Relationships
+
+## 1. Method 1: Inline Foreign Key
+
+Command:
+
+```sql
+CREATE TABLE departments (
+    dept_id SERIAL PRIMARY KEY,
+    dept_name VARCHAR(100) NOT NULL,
+    location VARCHAR(100)
+);
+
+CREATE TABLE employees (
+    emp_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    dept_id INTEGER REFERENCES departments(dept_id)
+);
+```
+
+Output:
+
+```text
+CREATE TABLE
+CREATE TABLE
+```
+
+The `\d departments` and `\d employees` commands confirmed the primary keys and the foreign key `employees_dept_id_fkey`.
+
+## 2. Method 2: Table-Level Foreign Key
+
+Created the tables using a table-level foreign key constraint.
+
+Output:
+
+```text
+CREATE TABLE
+CREATE TABLE
+```
+
+The `\d employees` command confirmed:
+
+```text
+Foreign-key constraints:
+    "employees_dept_id_fkey" FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+```
+
+## 3. Method 3: Adding a Foreign Key to an Existing Table
+
+Added a foreign key using `ALTER TABLE`.
+
+```sql
+ALTER TABLE employees
+ADD CONSTRAINT fk_employee_department
+FOREIGN KEY (dept_id) REFERENCES departments(dept_id);
+```
+
+Output:
+
+```text
+ALTER TABLE
+```
+
+The `\d employees` command confirmed:
+
+```text
+Foreign-key constraints:
+    "fk_employee_department" FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+```
+
+## 4. Method 4: Named Constraint During Table Creation
+
+```sql
+CREATE TABLE employees (
+    emp_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    dept_id INTEGER,
+    CONSTRAINT fk_employee_department
+        FOREIGN KEY (dept_id)
+        REFERENCES departments(dept_id)
+);
+```
+
+```text
+Foreign-key constraints:
+    "fk_employee_department" FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+```
+
+## 5. Referential Integrity
+
+Created three departments:
+
+```text
+dept_id | dept_name  | location
+--------+------------+-----------
+1       | Engineering| Building A
+2       | Marketing  | Building B
+3       | HR         | Building C
+```
+
+Inserted one employee:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+1      | John       | Smith     | 1
+```
+
+### Testing an invalid foreign key
+
+Attempted to insert an employee with `dept_id = 99`, which does not exist.
+
+Output:
+
+```text
+ERROR: insert or update on table "employees" violates foreign key constraint "employees_dept_id_fkey"
+DETAIL: Key (dept_id)=(99) is not present in table "departments".
+```
+
+### Testing deletion of a referenced department
+
+Attempted to delete department 1 while John Smith still referenced it.
+
+Output:
+
+```text
+ERROR: update or delete on table "departments" violates foreign key constraint "employees_dept_id_fkey" on table "employees"
+DETAIL: Key (dept_id)=(1) is still referenced from table "employees".
+```
+
+The department and employee remained unchanged.
+
+## 6. ON DELETE CASCADE
+
+Created two departments and three employees.
+
+Initial departments:
+
+```text
+dept_id | dept_name
+--------+------------
+1       | Engineering
+2       | Marketing
+```
+
+Initial employees:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+1      | John       | Smith     | 1
+2      | Jane       | Doe       | 1
+3      | Mike       | Brown     | 2
+```
+
+Deleted department 1.
+
+Output:
+
+```text
+DELETE 1
+```
+
+Remaining departments:
+
+```text
+dept_id | dept_name
+--------+-----------
+2       | Marketing
+```
+
+Remaining employees:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+3      | Mike       | Brown     | 2
+```
+
+John and Jane were automatically deleted because their department was deleted.
+
+## 7. ON DELETE SET NULL
+
+Created two departments and three employees.
+
+Deleted department 1.
+
+Output:
+
+```text
+DELETE 1
+```
+
+Remaining departments:
+
+```text
+dept_id | dept_name | location
+--------+-----------+--------
+2       | Marketing |
+```
+
+Employees after deletion:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+3      | Mike       | Brown     | 2
+1      | John       | Smith     | NULL
+2      | Jane       | Doe       | NULL
+```
+
+The foreign key values of John and Jane were set to `NULL`.
+
+## 8. ON DELETE SET DEFAULT
+
+Created three departments:
+
+```text
+dept_id | dept_name
+--------+------------
+1       | Unassigned
+2       | Engineering
+3       | Marketing
+```
+
+Inserted three employees:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+1      | John       | Smith     | 2
+2      | Jane       | Doe       | 2
+3      | Mike       | Brown     | 3
+```
+
+Deleted department 2.
+
+Output:
+
+```text
+DELETE 1
+```
+
+Remaining departments:
+
+```text
+dept_id | dept_name
+--------+-----------
+1       | Unassigned
+3       | Marketing
+```
+
+Employees after deletion:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+3      | Mike       | Brown     | 3
+1      | John       | Smith     | 1
+2      | Jane       | Doe       | 1
+```
+
+John and Jane were reassigned to the default department ID 1.
+
+## 9. ON DELETE RESTRICT
+
+Created department Engineering and employee John Smith, who referenced department 1.
+
+Attempted to delete department 1.
+
+Output:
+
+```text
+ERROR: update or delete on table "departments" violates foreign key constraint "employees_dept_id_fkey" on table "employees"
+DETAIL: Key (dept_id)=(1) is still referenced from table "employees".
+```
+
+The department could not be deleted while the employee referenced it.
+
+## 10. ON UPDATE CASCADE
+
+Created department Engineering and employee John Smith.
+
+Initial data:
+
+```text
+departments:
+dept_id | dept_name
+--------+------------
+1       | Engineering
+
+employees:
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+1      | John       | Smith     | 1
+```
+
+Updated the department ID from 1 to 10.
+
+Output:
+
+```text
+UPDATE 1
+```
+
+Departments after the update:
+
+```text
+dept_id | dept_name
+--------+------------
+10      | Engineering
+```
+
+Employees after the update:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+1      | John       | Smith     | 10
+```
+
+The employee's `dept_id` was automatically updated to 10.
+
+## 11. Combined ON UPDATE CASCADE and ON DELETE CASCADE
+
+Created departments Engineering and Marketing, and three employees.
+
+Initial departments:
+
+```text
+dept_id | dept_name
+--------+-----------
+1       | Engineering
+2       | Marketing
+```
+
+Initial employees:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+1      | John       | Smith     | 1
+2      | Jane       | Doe       | 1
+3      | Mike       | Brown     | 2
+```
+
+Updated department ID 1 to 10.
+
+Output:
+
+```text
+UPDATE 1
+```
+
+Employees John and Jane were automatically updated to `dept_id = 10`.
+
+dept_id |  dept_name
+---------+-------------
+       2 | Marketing
+      10 | Engineering
+(2 rows)
+
+
+ emp_id | first_name | last_name | dept_id
+--------+------------+-----------+---------
+      3 | Mike       | Brown     |       2
+      1 | John       | Smith     |      10
+      2 | Jane       | Doe       |      10
+(3 rows)
+
+Then deleted department 10.
+
+Output:
+
+```text
+DELETE 1
+```
+
+Final departments:
+
+```text
+dept_id | dept_name
+--------+-----------
+2       | Marketing
+```
+
+Final employees:
+
+```text
+emp_id | first_name | last_name | dept_id
+-------+------------+-----------+--------
+3      | Mike       | Brown     | 2
+```
+
+The update cascaded to the employees, and the subsequent deletion removed the employees linked to the deleted department.
+
+## 12. One-to-One Relationship
+
+Created tables `users_lab8` and `user_profiles_lab8`.
+
+The `user_profiles_lab8.user_id` column has both `UNIQUE` and `NOT NULL` constraints and references `users_lab8(user_id)` with `ON DELETE CASCADE`.
+
+Inserted user:
+
+```text
+user_id | username | email             | created_at
+--------+----------+-------------------+----------------------------
+1       | johndoe  | john@example.com  | 2026-10-17 22:05:22.986187
+```
+
+Inserted profile:
+
+```text
+profile_id | user_id | first_name | last_name | bio
+-----------+---------+------------+-----------+-----------------------------------------------
+1          | 1       | John       | Doe       | Software developer passionate about databases
+```
+
+### Testing the UNIQUE constraint
+
+Attempted to create a second profile for user 1.
+
+Output:
+
+```text
+ERROR: duplicate key value violates unique constraint "user_profiles_lab8_user_id_key"
+DETAIL: Key (user_id)=(1) already exists.
+```
+
+The `UNIQUE` constraint prevented the same user from having multiple profiles.
+
+## 13. One-to-Many Relationship
+
+Created tables `departments_lab8` and `employees_lab8`.
+
+Inserted departments:
+
+```text
+dept_id | dept_name  | manager_name  | budget
+--------+------------+---------------+-----------
+1       | Engineering| Alice Johnson | 500000.00
+2       | Marketing  | Bob Wilson    | 200000.00
+```
+
+Inserted employees:
+
+```text
+first_name | last_name | position              | salary    | dept_id
+-----------+-----------+-----------------------+-----------+--------
+John       | Smith     | Software Engineer     | 75000.00 | 1
+Jane       | Doe       | Senior Developer      | 85000.00 | 1
+Mike       | Brown     | DevOps Engineer       | 80000.00 | 1
+Sarah      | Davis     | Marketing Specialist  | 55000.00 | 2
+```
+
+The `JOIN` query returned:
+
+```text
+dept_name  | first_name | last_name | position
+-----------+------------+-----------+-----------------------
+Engineering| Mike       | Brown     | DevOps Engineer
+Engineering| Jane       | Doe       | Senior Developer
+Engineering| John       | Smith     | Software Engineer
+Marketing  | Sarah      | Davis     | Marketing Specialist
+```
+
+This demonstrates that one department can have multiple employees, while each employee references one department.
+
+## 14. Many-to-Many Relationship
+
+Created tables:
+
+- `students_lab8`
+- `courses`
+- `student_enrollments`
+
+The junction table `student_enrollments` contains foreign keys referencing both parent tables and a `UNIQUE(student_id, course_id)` constraint.
+
+Inserted students:
+
+```text
+student_id | first_name | last_name | email
+-----------+------------+-----------+-------------------
+1          | Anna       | Ivanova   | anna@example.com
+2          | Peter      | Smith     | peter@example.com
+3          | Maria      | Brown     | maria@example.com
+```
+
+Inserted courses:
+
+```text
+course_id | course_code | course_name         | credits | instructor
+----------+-------------+---------------------+---------+--------------
+1         | DB101       | Database Systems    | 3       | Alice Johnson
+2         | PY101       | Python Programming  | 4       | Bob Wilson
+3         | NW101       | Computer Networks   | 4       | Carol Davis
+```
+
+Inserted six enrollment records:
+
+```text
+student_id | course_id | grade
+-----------+-----------+------
+1          | 1         | A
+1          | 2         | B+
+2          | 1         | A-
+2          | 3         | B
+3          | 2         | A
+3          | 3         | A-
+```
+
+### Query: All students and their courses
+
+The `JOIN` query returned six rows:
+
+```text
+student_name | course_code | course_name         | grade | enrollment_date
+-------------+-------------+---------------------+-------+----------------
+Maria Brown  | NW101       | Computer Networks   | A-    | 2026-10-17
+Maria Brown  | PY101       | Python Programming  | A     | 2026-10-17
+Anna Ivanova | DB101       | Database Systems    | A     | 2026-10-17
+Anna Ivanova | PY101       | Python Programming  | B+    | 2026-10-17
+Peter Smith  | DB101       | Database Systems    | A-    | 2026-10-17
+Peter Smith  | NW101       | Computer Networks  | B     | 2026-10-17
+```
+
+### Query: Students enrolled in DB101
+
+```text
+first_name | last_name | grade
+-----------+-----------+------
+Anna       | Ivanova   | A
+Peter      | Smith     | A-
+```
+
+### Query: Courses taken by Maria
+
+```text
+course_code | course_name         | credits | grade
+------------+---------------------+---------+------
+PY101       | Python Programming  | 4       | A
+NW101       | Computer Networks   | 4       | A-
+```
+
+### Testing duplicate enrollment
+
+Attempted to enroll Anna in DB101 for a second time.
+
+Output:
+
+```text
+ERROR: duplicate key value violates unique constraint "student_enrollments_student_id_course_id_key"
+DETAIL: Key (student_id, course_id)=(1, 1) already exists.
+```
+
+The `UNIQUE(student_id, course_id)` constraint prevented duplicate enrollment of the same student in the same course.
+
+## Conclusion
+
+The lab demonstrated:
+
+- Four methods of defining foreign keys.
+- Referential integrity and foreign-key constraint violations.
+- `ON DELETE CASCADE`, `ON DELETE SET NULL`, `ON DELETE SET DEFAULT`, and `ON DELETE RESTRICT`.
+- `ON UPDATE CASCADE` and combined cascade options.
+- One-to-one, one-to-many, and many-to-many relationships.
+- Using `JOIN` queries to retrieve related data.
+- Using `UNIQUE` constraints to prevent duplicate profiles and duplicate student-course enrollments.
