@@ -1,0 +1,210 @@
+Lab 09 — Database Design Basics
+
+============================================================
+1. First Normal Form (1NF)
+============================================================
+
+Output:
+
+```text
+CREATE TABLE
+INSERT 0 1
+```
+
+SELECT * FROM students_bad;
+
+```text
+ student_id |     name      | phone_numbers
+------------+---------------+----------------
+          1 | Anna Ivanova  | 111-111, 222-222
+(1 row)
+```
+
+SELECT * FROM students_lab9;
+
+```text
+ student_id |     name
+------------+---------------
+          1 | Anna Ivanova
+(1 row)
+```
+
+SELECT * FROM students_phones;
+
+```text
+ student_id | phone_number | phone_type
+------------+--------------+-----------
+          1 | 111-111      | Mobile
+          1 | 222-222      | Work
+(2 rows)
+```
+
+The unnormalized table stores multiple phone numbers in one column. 
+The normalized design stores each phone number in a separate row.
+
+============================================================
+2. Second Normal Form (2NF)
+============================================================
+
+SELECT * FROM enrollments_bad;
+
+```text
+ student_id | course_id | course_name      | grade
+------------+-----------+------------------+------
+          1 |       101 | Database Systems | A
+          2 |       101 | Database Systems | B+
+(2 rows)
+```
+
+SELECT * FROM courses_lab9;
+
+```text
+ course_id | course_name      | credits
+-----------+------------------+--------
+       101 | Database Systems |       3
+(1 row)
+```
+
+SELECT * FROM enrollments_lab9;
+
+```text
+ student_id | course_id | grade
+------------+-----------+------
+          1 |       101 | A
+          2 |       101 | B+
+(2 rows)
+```
+
+Course information is stored separately from enrollment records, reducing repeated course details.
+
+============================================================
+3. Third Normal Form (3NF)
+============================================================
+
+SELECT * FROM students_bad_3nf;
+
+```text
+ student_id |     name     | department_id | department_name
+------------+--------------+---------------+----------------
+          1 | Anna Ivanova |            10 | Computer Science
+          2 | Peter Smith  |            10 | Computer Science
+(2 rows)
+```
+
+SELECT * FROM departments_lab9;
+
+```text
+ department_id | department_name | department_head
+---------------+-----------------+----------------
+            10 | Computer Science | Alice Johnson
+(1 row)
+```
+
+SELECT * FROM students_3nf_lab9;
+
+```text
+ student_id |     name     | department_id
+------------+--------------+---------------
+          1 | Anna Ivanova |            10
+          2 | Peter Smith  |            10
+(2 rows)
+```
+
+JOIN query result:
+
+```text
+ student_id |     name     | department_name | department_head
+------------+--------------+-----------------+----------------
+          1 | Anna Ivanova | Computer Science | Alice Johnson
+          2 | Peter Smith  | Computer Science | Alice Johnson
+(2 rows)
+```
+
+Department information is stored in a separate table and referenced by department_id.
+
+============================================================
+4. Library Database Design
+============================================================
+
+### Authors
+
+```text
+ author_id | first_name | last_name | birth_date
+-----------+------------+-----------+------------
+         1 | George     | Orwell    | 1903-06-25
+         2 | Jane       | Austen    | 1775-12-16
+(2 rows)
+```
+
+### Books
+
+```text
+ book_id | title               | isbn          | publication_year | available_copies
+---------+---------------------+---------------+------------------+-----------------
+       1 | 1984                | 9780451524935 |             1949 |               3
+       2 | Animal Farm         | 9780451526342 |             1945 |               2
+       3 | Pride and Prejudice | 9780141439518 |             1813 |               4
+(3 rows)
+```
+
+### Book Authors
+
+```text
+ book_id | author_id
+---------+----------
+       1 |        1
+       2 |        1
+       3 |        2
+(3 rows)
+```
+
+### Members
+
+```text
+ member_id | first_name | last_name | email             | phone   | membership_date
+-----------+------------+-----------+-------------------+---------+----------------
+         1 | Anna       | Ivanova   | anna@example.com  | 111-111 | current date
+         2 | Peter      | Smith     | peter@example.com | 222-222 | current date
+(2 rows)
+```
+
+### Loans
+
+```text
+ loan_id | member_id | book_id | loan_date  | due_date   | return_date | late_fee
+---------+-----------+---------+------------+------------+-------------+---------
+       1 |         1 |       1 | 2026-10-01 | 2026-10-15 | NULL        |    0.00
+       2 |         2 |       3 | 2026-10-02 | 2026-10-16 | 2026-10-10  |    0.00
+(2 rows)
+```
+
+### Books and Authors JOIN
+
+```text
+ title               | author_name   | publication_year | available_copies
+---------------------+---------------+------------------+-----------------
+ 1984                | George Orwell |             1949 |               3
+ Animal Farm         | George Orwell |             1945 |               2
+ Pride and Prejudice | Jane Austen   |             1813 |               4
+(3 rows)
+```
+
+### Loans and Members JOIN
+
+```text
+ member_name  | title               | loan_date  | due_date   | return_date | late_fee
+--------------+---------------------+------------+------------+-------------+---------
+ Anna Ivanova | 1984                | 2026-10-01 | 2026-10-15 | NULL        |    0.00
+ Peter Smith  | Pride and Prejudice | 2026-10-02 | 2026-10-16 | 2026-10-10  |    0.00
+(2 rows)
+```
+
+============================================================
+Conclusion
+============================================================
+
+- 1NF: Phone numbers are stored in separate rows.
+- 2NF: Course details are separated from enrollment records.
+- 3NF: Department information is stored in a separate table.
+- The library database uses primary keys, foreign keys, and a junction table for the many-to-many relationship between books and authors.
+- JOIN queries retrieve related information from multiple tables.
