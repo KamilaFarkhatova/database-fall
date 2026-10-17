@@ -1,0 +1,268 @@
+Lab 10 — Viewing Database and Table Structure
+
+============================================================
+1. List all tables using \dt
+============================================================
+
+Command:
+postgres=# \dt
+
+Output:
+            List of relations
+ Schema |    Name     | Type  |  Owner
+--------+-------------+-------+----------
+ public | customers   | table | postgres
+ public | employee    | table | postgres
+ public | order_items | table | postgres
+ public | orders      | table | postgres
+ public | products    | table | postgres
+ public | users       | table | postgres
+ public | users1      | table | postgres
+(7 rows)
+
+Result:
+Seven tables were found in the public schema.
+
+============================================================
+2. View database relations using \d
+============================================================
+
+Command:
+postgres=# \d
+
+Output:
+                    List of relations
+ Schema |           Name            |   Type   |  Owner
+--------+---------------------------+----------+----------
+ public | customers                 | table    | postgres
+ public | customers_customer_id_seq | sequence | postgres
+ public | employee                  | table    | postgres
+ public | employee_employee_id_seq  | sequence | postgres
+ public | order_items               | table    | postgres
+ public | order_items_item_id_seq   | sequence | postgres
+ public | orders                    | table    | postgres
+ public | orders_order_id_seq       | sequence | postgres
+ public | products                  | table    | postgres
+ public | products_product_id_seq   | sequence | postgres
+ public | users                     | table    | postgres
+ public | users1                    | table    | postgres
+ public | users1_id_seq             | sequence | postgres
+ public | users_id_seq              | sequence | postgres
+(14 rows)
+
+Result:
+The command displayed 14 relations, including tables and sequences.
+
+============================================================
+3. View the structure of customers
+============================================================
+
+Command:
+postgres=# \d customers
+
+Output:
+                                              Table "public.customers"
+      Column       |          Type          | Collation | Nullable |                    Default
+-------------------+------------------------+-----------+----------+------------------------------------------------
+ customer_id       | integer                |           | not null | nextval('customers_customer_id_seq'::regclass)
+ full_name         | character varying(100) |           |          |
+ city              | character varying(50)  |           |          |
+ registration_date | date                   |           |          |
+Indexes:
+    "customers_pkey" PRIMARY KEY, btree (customer_id)
+Referenced by:
+    TABLE "orders" CONSTRAINT "orders_customer_id_fkey" FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+
+Result:
+The customer_id column is the primary key.
+The orders table references customers through customer_id.
+
+============================================================
+4. View the structure of employee
+============================================================
+
+Command:
+postgres=# \d employee
+
+Output:
+                                          Table "public.employee"
+   Column    |         Type         | Collation | Nullable |                    Default
+-------------+----------------------+-----------+----------+-----------------------------------------------
+ employee_id | integer              |           | not null | nextval('employee_employee_id_seq'::regclass)
+ first_name  | character varying(50)|           |          |
+ department  | character varying(50)|           |          |
+ salary      | numeric(10,2)        |           |          |
+ hire_date   | date                 |           |          |
+Indexes:
+    "employee_pkey" PRIMARY KEY, btree (employee_id)
+    "employee_id_index" btree (employee_id)
+
+Result:
+The employee_id column is the primary key.
+An additional index exists on employee_id.
+
+============================================================
+5. View the structure of orders
+============================================================
+
+Command:
+postgres=# \d orders
+
+Output:
+                                         Table "public.orders"
+    Column    |          Type          | Collation | Nullable |                 Default
+--------------+-------------------------+-----------+----------+------------------------------------------
+ order_id     | integer                 |           | not null | nextval('orders_order_id_seq'::regclass)
+ customer_id  | integer                 |           |          |
+ order_date   | date                    |           |          |
+ status       | character varying(20)   |           |          |
+Indexes:
+    "orders_pkey" PRIMARY KEY, btree (order_id)
+Foreign-key constraints:
+    "orders_customer_id_fkey" FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+Referenced by:
+    TABLE "order_items" CONSTRAINT "order_items_order_id_fkey" FOREIGN KEY (order_id) REFERENCES orders(order_id)
+
+Result:
+The order_id column is the primary key.
+The customer_id column references customers(customer_id).
+The order_items table references orders through order_id.
+
+============================================================
+6. View the structure of order_items
+============================================================
+
+Command:
+postgres=# \d order_items
+
+Output:
+                                 Table "public.order_items"
+   Column   |  Type    | Collation | Nullable |                   Default
+------------+----------+-----------+----------+----------------------------------------------
+ item_id    | integer  |           | not null | nextval('order_items_item_id_seq'::regclass)
+ order_id   | integer  |           |          |
+ product_id | integer  |           |          |
+ quantity   | integer  |           |          |
+Indexes:
+    "order_items_pkey" PRIMARY KEY, btree (item_id)
+Foreign-key constraints:
+    "order_items_order_id_fkey" FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    "order_items_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(product_id)
+
+Result:
+The item_id column is the primary key.
+The order_id and product_id columns are foreign keys.
+
+============================================================
+7. View the structure of products
+============================================================
+
+Command:
+postgres=# \d products
+
+Output:
+                                            Table "public.products"
+     Column    |          Type          | Collation | Nullable |                   Default
+---------------+-------------------------+-----------+----------+----------------------------------------------
+ product_id    | integer                |           | not null | nextval('products_product_id_seq'::regclass)
+ product_name  | character varying(100) |           |          |
+ category      | character varying(50)  |           |          |
+ price         | numeric(10,2)          |           |          |
+Indexes:
+    "products_pkey" PRIMARY KEY, btree (product_id)
+Referenced by:
+    TABLE "order_items" CONSTRAINT "order_items_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(product_id)
+
+Result:
+The product_id column is the primary key.
+The order_items table references products through product_id.
+
+============================================================
+8. View the structure of users
+============================================================
+
+Command:
+postgres=# \d users
+
+Output:
+                                         Table "public.users"
+   Column   |            Type             | Collation | Nullable |              Default
+------------+-----------------------------+-----------+----------+-----------------------------------
+ id         | integer                     |           | not null | nextval('users_id_seq'::regclass)
+ first_name | text                        |           |          |
+ last_name  | text                        |           |          |
+ email      | text                        |           |          |
+ created_at | timestamp without time zone |           |          | now()
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (id)
+    "idx_users_email_unique" UNIQUE, btree (email)
+    "idx_users_last_first" btree (last_name, first_name)
+
+Result:
+The id column is the primary key.
+A unique index exists on email.
+Another index covers last_name and first_name.
+
+============================================================
+9. View the structure of users1
+============================================================
+
+Command:
+postgres=# \d users1
+
+Output:
+                                     Table "public.users1"
+ Column |          Type          | Collation | Nullable |              Default
+--------+-------------------------+-----------+----------+------------------------------------
+ id     | integer                 |           | not null | nextval('users1_id_seq'::regclass)
+ name   | character varying(100)  |           |          |
+ age    | integer                 |           |          |
+Indexes:
+    "users1_pkey" PRIMARY KEY, btree (id)
+
+Result:
+The id column is the primary key.
+The table contains name and age columns.
+
+============================================================
+10. Display connection information
+============================================================
+
+Command:
+postgres=# \conninfo
+
+Output:
+You are connected to database "postgres" as user "postgres"
+on host "localhost" (address "::1") at port "5432".
+
+Result:
+The current connection uses the postgres database and postgres user.
+
+============================================================
+11. List foreign-key relationships
+============================================================
+
+ table_name  | column_name | referenced_table | referenced_column |       constraint_name
+-------------+-------------+------------------+-------------------+-----------------------------
+ order_items | order_id    | orders           | order_id          | order_items_order_id_fkey
+ order_items | product_id  | products         | product_id       | order_items_product_id_fkey
+ orders      | customer_id | customers        | customer_id      | orders_customer_id_fkey
+(3 rows)
+
+Result:
+Three foreign-key relationships were found:
+1. order_items.order_id references orders.order_id.
+2. order_items.product_id references products.product_id.
+3. orders.customer_id references customers.customer_id.
+============================================================
+12. ER Diagram
+============================================================
+
+File: erd_dvd_rental_hw.png
+
+The diagram was exported from DBeaver and represents the
+dvd_rental_hw database from a separate project.
+
+It visualizes tables and relationships involving films,
+actors, categories, inventory, rentals, payments, customers,
+staff, stores, and address information.
