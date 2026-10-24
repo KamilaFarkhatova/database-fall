@@ -1,0 +1,588 @@
+LAB 13 — AGGREGATE FUNCTIONS
+
+==================================================
+1. TABLES
+==================================================
+
+Command:
+\dt
+
+ Schema | Name                  | Type  | Owner
+--------+-----------------------+-------+----------
+ public | customers             | table | postgres
+ public | employee              | table | postgres
+ public | employee_skills_lab13 | table | postgres
+ public | employees_lab13       | table | postgres
+ public | order_items           | table | postgres
+ public | orders                | table | postgres
+ public | product_reviews_lab13 | table | postgres
+ public | products              | table | postgres
+ public | products_lab13        | table | postgres
+ public | sales_lab13           | table | postgres
+ public | users                 | table | postgres
+ public | users1                | table | postgres
+
+(12 rows)
+
+==================================================
+2. EMPLOYEES_LAB13
+==================================================
+
+Command:
+SELECT * FROM employees_lab13 ORDER BY employee_id;
+
+ employee_id | first_name | last_name | department  |  salary   | age | hire_date  |       email        |  bonus   | experience_years
+-------------+------------+-----------+-------------+-----------+-----+------------+--------------------+----------+-----------------
+           1 | Alice      | Brown     | Engineering | 120000.00 |  28 | 2021-03-15 | alice@gmail.com    | 12000.00 |              6.0
+           2 | Bob        | Smith     | Sales       |  85000.00 |  35 | 2022-06-10 | bob@company.com    |  5000.00 |             10.0
+           3 | Anna       | White     | Engineering |  95000.00 |  32 | 2023-02-20 | anna@gmail.com     |  8000.00 |              8.0
+           4 | Brandon    | Lee       | Sales       |  65000.00 |  25 | 2024-01-15 | brandon@gmail.com  |          |              3.0
+           5 | David      | Green     | HR          |  55000.00 |  45 | 2020-09-01 | david@company.com  |  2000.00 |             15.0
+           6 | Amy        | Taylor    | Sales       |  72000.00 |  29 | 2025-04-12 | amy@gmail.com      |  3500.00 |              5.0
+           7 | Brian      | Clark     | Engineering |  78000.00 |  38 | 2022-11-08 |                    |  4000.00 |             12.0
+           8 | Maria      | Garcia    | Sales       |  68000.00 |  27 | 2023-07-17 | maria@gmail.com    |  2500.00 |              4.0
+           9 | James      | Wilson    | Sales       |  74000.00 |  41 | 2021-12-05 | james@company.com  |          |             14.0
+          10 | Sophia     | Martin    | Sales       |  61000.00 |  23 | 2025-08-01 | sophia@gmail.com   |  1500.00 |              2.0
+          11 | Daniel     | Young     | HR          |  59000.00 |  31 | 2024-05-20 | daniel@company.com |  1800.00 |              7.0
+          12 | Olivia     | King      | Engineering | 105000.00 |  50 | 2019-04-10 | olivia@gmail.com   | 10000.00 |             20.0
+
+(12 rows)
+
+==================================================
+3. PRODUCTS_LAB13
+==================================================
+
+Command:
+SELECT * FROM products_lab13 ORDER BY product_id;
+
+ product_id | product_name | category    |  price
+------------+--------------+-------------+---------
+          1 | Laptop       | Electronics | 1200.00
+          2 | Keyboard     | Electronics |   80.00
+          3 | Monitor      | Electronics |  350.00
+          4 | Desk         | Furniture   |  450.00
+          5 | Chair        | Furniture   |  220.00
+          6 | Notebook     | Stationery  |    5.00
+
+(6 rows)
+
+==================================================
+4. SALES_LAB13
+==================================================
+
+Command:
+SELECT * FROM sales_lab13 ORDER BY sale_id;
+
+ sale_id | department  | amount  | sale_date
+---------+-------------+---------+------------
+       1 | Sales       | 1500.00 | 2025-01-15
+       2 | Sales       | 2200.00 | 2025-02-20
+       3 | Engineering | 1800.00 | 2025-03-12
+       4 | HR          |  900.00 | 2025-04-05
+       5 | Sales       | 3100.00 | 2025-04-18
+       6 | Engineering | 2500.00 | 2025-07-22
+       7 | Sales       | 1700.00 | 2025-08-10
+       8 | HR          | 1100.00 | 2025-10-03
+       9 | Engineering | 2900.00 | 2026-01-17
+      10 | Sales       | 3600.00 | 2026-04-11
+
+(10 rows)
+
+==================================================
+5. EMPLOYEE_SKILLS_LAB13
+==================================================
+
+Command:
+SELECT * FROM employee_skills_lab13 ORDER BY skill_id;
+
+ skill_id | employee_id | skill_name
+----------+-------------+---------------
+        1 |           1 | Python
+        2 |           1 | SQL
+        3 |           1 | Docker
+        4 |           2 | Communication
+        5 |           2 | Negotiation
+        6 |           3 | Python
+        7 |           3 | PostgreSQL
+        8 |           4 | Salesforce
+        9 |           4 | Communication
+       10 |           5 | Recruiting
+       11 |           6 | Negotiation
+       12 |           6 | Communication
+       13 |           7 | Docker
+       14 |           7 | PostgreSQL
+       15 |           8 | Salesforce
+       16 |           9 | Negotiation
+       17 |          10 | Communication
+       18 |          12 | Python
+       19 |          12 | Leadership
+
+(19 rows)
+
+==================================================
+6. PRODUCT_REVIEWS_LAB13
+==================================================
+
+Command:
+SELECT * FROM product_reviews_lab13 ORDER BY review_id;
+
+ review_id | product_id | rating
+-----------+------------+--------
+         1 |          1 |    5.0
+         2 |          1 |    4.5
+         3 |          1 |    4.8
+         4 |          1 |    4.7
+         5 |          1 |    5.0
+         6 |          1 |    4.6
+         7 |          1 |    4.9
+         8 |          1 |    4.8
+         9 |          1 |    4.7
+        10 |          1 |    5.0
+        11 |          2 |    4.0
+        12 |          2 |    3.5
+        13 |          2 |    4.2
+        14 |          2 |    3.8
+        15 |          3 |    4.5
+        16 |          3 |    4.7
+        17 |          3 |    4.6
+
+(17 rows)
+
+==================================================
+7. COUNT
+==================================================
+
+Query:
+SELECT COUNT(*) AS total_employees FROM employees_lab13;
+
+ total_employees
+-----------------
+              12
+(1 row)
+
+Query:
+SELECT COUNT(email) AS employees_with_email FROM employees_lab13;
+
+ employees_with_email
+----------------------
+                   11
+(1 row)
+
+Query:
+SELECT COUNT(DISTINCT department) AS unique_departments FROM employees_lab13;
+
+ unique_departments
+--------------------
+                  3
+(1 row)
+
+==================================================
+8. SUM
+==================================================
+
+Query:
+SELECT SUM(salary) AS total_salaries FROM employees_lab13;
+
+ total_salaries
+----------------
+      937000.00
+(1 row)
+
+Query:
+SELECT department, SUM(amount) AS total_sales
+FROM sales_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  | total_sales
+-------------+------------
+ Engineering |     7200.00
+ HR          |     2000.00
+ Sales       |    12100.00
+
+(3 rows)
+
+==================================================
+9. AVG
+==================================================
+
+Query:
+SELECT AVG(salary) AS average_salary FROM employees_lab13;
+
+   average_salary
+--------------------
+ 78083.333333333333
+(1 row)
+
+Query:
+SELECT department, AVG(age) AS avg_age
+FROM employees_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  |       avg_age
+-------------+---------------------
+ Engineering | 37.0000000000000000
+ HR          | 38.0000000000000000
+ Sales       | 30.0000000000000000
+
+(3 rows)
+
+==================================================
+10. MAX AND MIN
+==================================================
+
+Query:
+SELECT MAX(salary) AS highest_salary,
+       MIN(salary) AS lowest_salary
+FROM employees_lab13;
+
+ highest_salary | lowest_salary
+----------------+---------------
+      120000.00 |      55000.00
+(1 row)
+
+Query:
+SELECT department, MAX(hire_date) AS latest_hire
+FROM employees_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  | latest_hire
+-------------+-------------
+ Engineering | 2023-02-20
+ HR          | 2024-05-20
+ Sales       | 2025-08-01
+
+(3 rows)
+
+==================================================
+11. STRING_AGG
+==================================================
+
+Query:
+SELECT department, STRING_AGG(first_name, ', ') AS employee_names
+FROM employees_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  | employee_names
+-------------+-----------------------------------------
+ Engineering | Olivia, Anna, Brian, Alice
+ HR          | Daniel, David
+ Sales       | Maria, James, Bob, Sophia, Brandon, Amy
+
+(3 rows)
+
+Query:
+SELECT employee_id,
+       STRING_AGG(skill_name, ', ' ORDER BY skill_name) AS skills
+FROM employee_skills_lab13
+GROUP BY employee_id
+ORDER BY employee_id;
+
+ employee_id | skills
+-------------+----------------------------
+           1 | Docker, Python, SQL
+           2 | Communication, Negotiation
+           3 | PostgreSQL, Python
+           4 | Communication, Salesforce
+           5 | Recruiting
+           6 | Communication, Negotiation
+           7 | Docker, PostgreSQL
+           8 | Salesforce
+           9 | Negotiation
+          10 | Communication
+          12 | Leadership, Python
+
+(11 rows)
+
+==================================================
+12. ARRAY_AGG
+==================================================
+
+Query:
+SELECT department, ARRAY_AGG(salary) AS salary_array
+FROM employees_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  | salary_array
+-------------+---------------------------------------------------------
+ Engineering | {105000.00,95000.00,78000.00,120000.00}
+ HR          | {59000.00,55000.00}
+ Sales       | {68000.00,74000.00,85000.00,61000.00,65000.00,72000.00}
+
+(3 rows)
+
+Query:
+SELECT department, ARRAY_AGG(first_name ORDER BY last_name) AS employees
+FROM employees_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  | employees
+-------------+--------------------------------------
+ Engineering | {Alice,Brian,Olivia,Anna}
+ HR          | {David,Daniel}
+ Sales       | {Maria,Brandon,Sophia,Bob,Amy,James}
+
+(3 rows)
+
+==================================================
+13. STATISTICAL AGGREGATES
+==================================================
+
+Query:
+SELECT department, STDDEV(salary) AS salary_std_dev,
+       VARIANCE(salary) AS salary_variance
+FROM employees_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  | salary_std_dev   | salary_variance
+-------------+------------------+-----------------------
+ Engineering |    17635.19208855 |    311000000.00000000
+ HR          | 2828.427124746190 |  8000000.000000000000
+ Sales       | 8376.554582086042 | 70166666.666666666667
+
+(3 rows)
+
+Query:
+SELECT CORR(experience_years, salary) AS experience_salary_correlation
+FROM employees_lab13;
+
+ experience_salary_correlation
+-------------------------------
+            0.26046279721569243
+(1 row)
+
+==================================================
+14. GROUP BY: PRODUCT CATEGORY
+==================================================
+
+Query:
+SELECT category, COUNT(*) AS number_of_products,
+       SUM(price) AS total_value, AVG(price) AS average_price
+FROM products_lab13
+GROUP BY category
+ORDER BY category;
+
+ category    | number_of_products | total_value | average_price
+-------------+--------------------+-------------+----------------------
+ Electronics |                  3 |     1630.00 | 543.3333333333333333
+ Furniture   |                  2 |      670.00 | 335.0000000000000000
+ Stationery  |                  1 |        5.00 |   5.0000000000000000
+
+(3 rows)
+
+==================================================
+15. GROUP BY YEAR AND QUARTER
+==================================================
+
+Query:
+SELECT EXTRACT(YEAR FROM sale_date) AS year,
+       EXTRACT(QUARTER FROM sale_date) AS quarter,
+       COUNT(*) AS total_sales, SUM(amount) AS total_revenue
+FROM sales_lab13
+GROUP BY EXTRACT(YEAR FROM sale_date),
+         EXTRACT(QUARTER FROM sale_date)
+ORDER BY year, quarter;
+
+ year | quarter | total_sales | total_revenue
+------+---------+-------------+---------------
+ 2025 |       1 |           3 |       5500.00
+ 2025 |       2 |           2 |       4000.00
+ 2025 |       3 |           2 |       4200.00
+ 2025 |       4 |           1 |       1100.00
+ 2026 |       1 |           1 |       2900.00
+ 2026 |       2 |           1 |       3600.00
+
+(6 rows)
+
+==================================================
+16. GROUP BY AGE GROUP
+==================================================
+
+Query:
+SELECT CASE
+         WHEN age < 30 THEN 'Under 30'
+         WHEN age BETWEEN 30 AND 50 THEN '30-50'
+         ELSE 'Over 50'
+       END AS age_group,
+       COUNT(*) AS employee_count, AVG(salary) AS avg_salary
+FROM employees_lab13
+GROUP BY CASE
+           WHEN age < 30 THEN 'Under 30'
+           WHEN age BETWEEN 30 AND 50 THEN '30-50'
+           ELSE 'Over 50'
+         END
+ORDER BY age_group;
+
+ age_group | employee_count | avg_salary
+-----------+----------------+--------------------
+ 30-50     |              7 | 78714.285714285714
+ Under 30  |              5 | 77200.000000000000
+
+(2 rows)
+
+==================================================
+17. HAVING
+==================================================
+
+Query:
+SELECT department, COUNT(*) AS employee_count
+FROM employees_lab13
+GROUP BY department
+HAVING COUNT(*) > 5;
+
+ department | employee_count
+------------+----------------
+ Sales      |              6
+
+(1 row)
+
+Query:
+SELECT product_id, AVG(rating) AS avg_rating,
+       COUNT(*) AS review_count
+FROM product_reviews_lab13
+GROUP BY product_id
+HAVING AVG(rating) > 4.0 AND COUNT(*) >= 10
+ORDER BY product_id;
+
+ product_id | avg_rating         | review_count
+------------+--------------------+--------------
+          1 | 4.8000000000000000 |           10
+
+(1 row)
+
+==================================================
+18. AGGREGATE FUNCTION BY DEPARTMENT
+==================================================
+
+Query:
+SELECT department, AVG(salary) AS dept_avg_salary
+FROM employees_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  | dept_avg_salary
+-------------+--------------------
+ Engineering | 99500.000000000000
+ HR          | 57000.000000000000
+ Sales       | 70833.333333333333
+
+(3 rows)
+
+==================================================
+19. WINDOW FUNCTION
+==================================================
+
+Query:
+SELECT employee_id, first_name, department, salary,
+       AVG(salary) OVER (PARTITION BY department) AS dept_avg_salary
+FROM employees_lab13
+ORDER BY department, employee_id;
+
+ employee_id | first_name | department  |  salary   | dept_avg_salary
+-------------+------------+-------------+-----------+--------------------
+           1 | Alice      | Engineering | 120000.00 | 99500.000000000000
+           3 | Anna       | Engineering |  95000.00 | 99500.000000000000
+           7 | Brian      | Engineering |  78000.00 | 99500.000000000000
+          12 | Olivia     | Engineering | 105000.00 | 99500.000000000000
+           5 | David      | HR          |  55000.00 | 57000.000000000000
+          11 | Daniel     | HR          |  59000.00 | 57000.000000000000
+           2 | Bob        | Sales       |  85000.00 | 70833.333333333333
+           4 | Brandon    | Sales       |  65000.00 | 70833.333333333333
+           6 | Amy        | Sales       |  72000.00 | 70833.333333333333
+           8 | Maria      | Sales       |  68000.00 | 70833.333333333333
+           9 | James      | Sales       |  74000.00 | 70833.333333333333
+          10 | Sophia     | Sales       |  61000.00 | 70833.333333333333
+
+(12 rows)
+
+==================================================
+20. HANDLING NULL VALUES
+==================================================
+
+Query:
+SELECT COUNT(*) AS total_rows, COUNT(email) AS non_null_emails,
+       COUNT(*) - COUNT(email) AS null_emails
+FROM employees_lab13;
+
+ total_rows | non_null_emails | null_emails
+------------+-----------------+------------
+         12 |              11 |          1
+
+(1 row)
+
+Query:
+SELECT SUM(bonus) AS total_bonus, AVG(bonus) AS avg_bonus,
+       COUNT(bonus) AS employees_with_bonus
+FROM employees_lab13;
+
+ total_bonus | avg_bonus           | employees_with_bonus
+-------------+---------------------+----------------------
+    50300.00 | 5030.0000000000000000 |                   10
+
+(1 row)
+
+==================================================
+21. MULTIPLE AGGREGATIONS
+==================================================
+
+Query:
+SELECT department, COUNT(*) AS employee_count,
+       MIN(salary) AS min_salary, MAX(salary) AS max_salary,
+       AVG(salary) AS avg_salary, STDDEV(salary) AS salary_std_dev
+FROM employees_lab13
+GROUP BY department
+ORDER BY avg_salary DESC;
+
+ department  | employee_count | min_salary | max_salary | avg_salary         | salary_std_dev
+-------------+----------------+------------+------------+--------------------+-------------------
+ Engineering |              4 |   78000.00 |  120000.00 | 99500.000000000000 |    17635.19208855
+ Sales       |              6 |   61000.00 |   85000.00 | 70833.333333333333 | 8376.554582086042
+ HR          |              2 |   55000.00 |   59000.00 | 57000.000000000000 | 2828.427124746190
+
+(3 rows)
+
+==================================================
+22. CONDITIONAL AGGREGATION
+==================================================
+
+Query:
+SELECT department, COUNT(*) AS total_employees,
+       COUNT(CASE WHEN salary > 50000 THEN 1 END) AS high_earners,
+       COUNT(CASE WHEN hire_date > '2023-01-01' THEN 1 END) AS recent_hires
+FROM employees_lab13
+GROUP BY department
+ORDER BY department;
+
+ department  | total_employees | high_earners | recent_hires
+-------------+-----------------+--------------+--------------
+ Engineering |               4 |            4 |            1
+ HR          |               2 |            2 |            1
+ Sales       |               6 |            6 |            4
+
+(3 rows)
+
+==================================================
+23. PERCENTAGE CALCULATIONS
+==================================================
+
+Query:
+SELECT department, COUNT(*) AS dept_count,
+       COUNT(*)::FLOAT /
+       (SELECT COUNT(*) FROM employees_lab13) * 100 AS percentage
+FROM employees_lab13
+GROUP BY department
+ORDER BY percentage DESC;
+
+ department  | dept_count | percentage
+-------------+------------+--------------------
+ Sales       |          6 |                 50
+ Engineering |          4 |  33.33333333333333
+ HR          |          2 | 16.666666666666664
+
+(3 rows)
