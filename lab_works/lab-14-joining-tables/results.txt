@@ -1,0 +1,574 @@
+
+LAB 14 — JOINING TABLES
+
+==================================================
+1. TABLE LIST
+==================================================
+
+Command:
+\dt
+
+ Schema | Name                  | Type  | Owner
+--------+-----------------------+-------+----------
+ public | authors_lab14         | table | postgres
+ public | books_lab14           | table | postgres
+ public | courses_lab14         | table | postgres
+ public | customers             | table | postgres
+ public | customers_lab14       | table | postgres
+ public | employee              | table | postgres
+ public | employees_lab14       | table | postgres
+ public | enrollments_lab14     | table | postgres
+ public | order_items            | table | postgres
+ public | order_items_lab14     | table | postgres
+ public | orders                | table | postgres
+ public | orders_lab14          | table | postgres
+ public | products              | table | postgres
+ public | products_lab14        | table | postgres
+ public | students_lab14        | table | postgres
+ public | user_profiles_lab14   | table | postgres
+ public | users                 | table | postgres
+ public | users1                | table | postgres
+ public | users_lab14           | table | postgres
+
+(19 rows)
+
+==================================================
+2. CUSTOMERS_LAB14
+==================================================
+
+Command:
+SELECT * FROM customers_lab14 ORDER BY customer_id;
+
+ customer_id | name        | email
+-------------+-------------+-------------------
+ 1           | Alice Brown | alice@example.com
+ 2           | Bob Smith   | bob@example.com
+ 3           | Carol White | carol@example.com
+ 4           | David Green | david@example.com
+
+(4 rows)
+
+==================================================
+3. ORDERS_LAB14
+==================================================
+
+Command:
+SELECT * FROM orders_lab14 ORDER BY order_id;
+
+ order_id | customer_id | order_date | total_amount
+----------+-------------+------------+-------------
+ 1        | 1           | 2025-01-15 | 250.00
+ 2        | 1           | 2025-02-20 | 120.00
+ 3        | 2           | 2025-03-05 | 75.50
+ 4        | 4           | 2025-04-10 | 310.00
+ 5        | 99          | 2025-05-01 | 50.00
+
+(5 rows)
+
+==================================================
+4. PRODUCTS_LAB14
+==================================================
+
+Command:
+SELECT * FROM products_lab14 ORDER BY product_id;
+
+ product_id | product_name | price
+------------+--------------+---------
+ 1          | Laptop       | 1200.00
+ 2          | Keyboard     | 80.00
+ 3          | Monitor      | 350.00
+ 4          | Notebook     | 5.00
+
+(4 rows)
+
+==================================================
+5. ORDER_ITEMS_LAB14
+==================================================
+
+Command:
+SELECT * FROM order_items_lab14 ORDER BY item_id;
+
+ item_id | order_id | product_id | quantity
+---------+----------+------------+---------
+ 1       | 1        | 1          | 1
+ 2       | 1        | 2          | 2
+ 3       | 2        | 4          | 5
+ 4       | 3        | 2          | 1
+ 5       | 4        | 3          | 2
+ 6       | 5        | 4          | 3
+
+(6 rows)
+
+==================================================
+6. EMPLOYEES_LAB14
+==================================================
+
+Command:
+SELECT * FROM employees_lab14 ORDER BY employee_id;
+
+ employee_id | name          | manager_id
+-------------+---------------+------------
+ 1           | Maria Garcia  | NULL
+ 2           | James Wilson  | 1
+ 3           | Sophia Martin | 1
+ 4           | Daniel Young  | 2
+ 5           | Olivia King   | 2
+
+(5 rows)
+
+==================================================
+7. USERS_LAB14
+==================================================
+
+Command:
+SELECT * FROM users_lab14 ORDER BY user_id;
+
+ user_id | username
+---------+----------
+ 1       | alice_b
+ 2       | bob_s
+ 3       | carol_w
+
+(3 rows)
+
+==================================================
+8. USER_PROFILES_LAB14
+==================================================
+
+Command:
+SELECT * FROM user_profiles_lab14 ORDER BY profile_id;
+
+ profile_id | user_id | first_name | last_name | phone
+------------+---------+------------+-----------+----------
+ 1          | 1       | Alice      | Brown     | 555-0101
+ 2          | 2       | Bob        | Smith     | 555-0102
+
+(2 rows)
+
+==================================================
+9. AUTHORS_LAB14
+==================================================
+
+Command:
+SELECT * FROM authors_lab14 ORDER BY author_id;
+
+ author_id | author_name
+-----------+--------------
+ 1         | George Orwell
+ 2         | Jane Austen
+ 3         | Mark Twain
+
+(3 rows)
+
+==================================================
+10. BOOKS_LAB14
+==================================================
+
+Command:
+SELECT * FROM books_lab14 ORDER BY book_id;
+
+ book_id | author_id | title               | publication_year
+---------+-----------+---------------------+-----------------
+ 1       | 1         | 1984                | 1949
+ 2       | 1         | Animal Farm         | 1945
+ 3       | 2         | Pride and Prejudice | 1813
+
+(3 rows)
+
+==================================================
+11. STUDENTS_LAB14
+==================================================
+
+Command:
+SELECT * FROM students_lab14 ORDER BY student_id;
+
+ student_id | student_name
+------------+-------------------
+ 1          | Aibek Erkinov
+ 2          | Kamila Farkhatova
+ 3          | Meerim Bekova
+ 4          | Nursultan Isakov
+
+(4 rows)
+
+==================================================
+12. COURSES_LAB14
+==================================================
+
+Command:
+SELECT * FROM courses_lab14 ORDER BY course_id;
+
+ course_id | course_name
+-----------+---------------------
+ 1         | Database Systems
+ 2         | Python Programming
+ 3         | Computer Networks
+
+(3 rows)
+
+==================================================
+13. ENROLLMENTS_LAB14
+==================================================
+
+Command:
+SELECT * FROM enrollments_lab14 ORDER BY enrollment_id;
+
+ enrollment_id | student_id | course_id | enrollment_date | grade
+---------------+------------+-----------+-----------------+-------
+ 1             | 1          | 1         | 2025-01-10      | 90.00
+ 2             | 1          | 2         | 2025-01-12      | 85.00
+ 3             | 2          | 1         | 2025-01-15      | 95.00
+ 4             | 2          | 3         | 2025-01-18      | NULL
+ 5             | 3          | 2         | 2025-02-01      | 88.00
+
+(5 rows)
+
+==================================================
+14. INNER JOIN
+==================================================
+
+Query:
+SELECT c.name, c.email, o.order_date, o.total_amount
+FROM customers_lab14 c
+INNER JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id;
+
+    name     | email             | order_date | total_amount
+-------------+-------------------+------------+-------------
+ Alice Brown | alice@example.com | 2025-01-15 | 250.00
+ Alice Brown | alice@example.com | 2025-02-20 | 120.00
+ Bob Smith   | bob@example.com   | 2025-03-05 | 75.50
+ David Green | david@example.com | 2025-04-10 | 310.00
+
+(4 rows)
+
+==================================================
+15. LEFT JOIN
+==================================================
+
+Query:
+SELECT c.name, c.email, o.order_date, o.total_amount
+FROM customers_lab14 c
+LEFT JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id
+ORDER BY c.customer_id, o.order_date;
+
+    name     | email             | order_date | total_amount
+-------------+-------------------+------------+-------------
+ Alice Brown | alice@example.com | 2025-01-15 | 250.00
+ Alice Brown | alice@example.com | 2025-02-20 | 120.00
+ Bob Smith   | bob@example.com   | 2025-03-05 | 75.50
+ Carol White | carol@example.com | NULL       | NULL
+ David Green | david@example.com | 2025-04-10 | 310.00
+
+(5 rows)
+
+==================================================
+16. RIGHT JOIN
+==================================================
+
+Query:
+SELECT c.name, c.email, o.order_id, o.order_date, o.total_amount
+FROM customers_lab14 c
+RIGHT JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id
+ORDER BY o.order_id;
+
+    name     | email             | order_id | order_date | total_amount
+-------------+-------------------+----------+------------+-------------
+ Alice Brown | alice@example.com | 1        | 2025-01-15 | 250.00
+ Alice Brown | alice@example.com | 2        | 2025-02-20 | 120.00
+ Bob Smith   | bob@example.com   | 3        | 2025-03-05 | 75.50
+ David Green | david@example.com | 4        | 2025-04-10 | 310.00
+ NULL        | NULL              | 5        | 2025-05-01 | 50.00
+
+(5 rows)
+
+==================================================
+17. FULL OUTER JOIN
+==================================================
+
+Query:
+SELECT c.name, c.email, o.order_id, o.order_date, o.total_amount
+FROM customers_lab14 c
+FULL OUTER JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id
+ORDER BY c.customer_id NULLS LAST, o.order_id;
+
+    name     | email             | order_id | order_date | total_amount
+-------------+-------------------+----------+------------+-------------
+ Alice Brown | alice@example.com | 1        | 2025-01-15 | 250.00
+ Alice Brown | alice@example.com | 2        | 2025-02-20 | 120.00
+ Bob Smith   | bob@example.com   | 3        | 2025-03-05 | 75.50
+ Carol White | carol@example.com | NULL     | NULL       | NULL
+ David Green | david@example.com | 4        | 2025-04-10 | 310.00
+ NULL        | NULL              | 5        | 2025-05-01 | 50.00
+
+(6 rows)
+
+==================================================
+18. CROSS JOIN
+==================================================
+
+Query:
+SELECT c.name, p.product_name
+FROM customers_lab14 c
+CROSS JOIN products_lab14 p
+ORDER BY c.name, p.product_name;
+
+    name     | product_name
+-------------+-------------
+ Alice Brown | Keyboard
+ Alice Brown | Laptop
+ Alice Brown | Monitor
+ Alice Brown | Notebook
+ Bob Smith   | Keyboard
+ Bob Smith   | Laptop
+ Bob Smith   | Monitor
+ Bob Smith   | Notebook
+ Carol White | Keyboard
+ Carol White | Laptop
+ Carol White | Monitor
+ Carol White | Notebook
+ David Green | Keyboard
+ David Green | Laptop
+ David Green | Monitor
+ David Green | Notebook
+
+(16 rows)
+
+==================================================
+19. MULTIPLE TABLE JOINS
+==================================================
+
+Query:
+SELECT c.name, o.order_date, oi.quantity, p.product_name, p.price
+FROM customers_lab14 c
+INNER JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id
+INNER JOIN order_items_lab14 oi
+    ON o.order_id = oi.order_id
+INNER JOIN products_lab14 p
+    ON oi.product_id = p.product_id
+ORDER BY c.name, o.order_date, p.product_name;
+
+    name     | order_date | quantity | product_name | price
+-------------+------------+----------+--------------+---------
+ Alice Brown | 2025-01-15 | 2        | Keyboard     | 80.00
+ Alice Brown | 2025-01-15 | 1        | Laptop       | 1200.00
+ Alice Brown | 2025-02-20 | 5        | Notebook     | 5.00
+ Bob Smith   | 2025-03-05 | 1        | Keyboard     | 80.00
+ David Green | 2025-04-10 | 2        | Monitor      | 350.00
+
+(5 rows)
+
+==================================================
+20. SELF JOIN
+==================================================
+
+Query:
+SELECT e1.name AS employee, e2.name AS manager
+FROM employees_lab14 e1
+LEFT JOIN employees_lab14 e2
+    ON e1.manager_id = e2.employee_id
+ORDER BY e1.employee_id;
+
+ employee      | manager
+---------------+--------------
+ Maria Garcia  | NULL
+ James Wilson  | Maria Garcia
+ Sophia Martin | Maria Garcia
+ Daniel Young  | James Wilson
+ Olivia King   | James Wilson
+
+(5 rows)
+
+==================================================
+21. JOIN WITH CONDITIONS
+==================================================
+
+Query:
+SELECT c.name, o.order_date, o.total_amount
+FROM customers_lab14 c
+INNER JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id
+WHERE o.order_date >= '2024-01-01'
+  AND o.total_amount > 100
+ORDER BY o.order_date;
+
+    name     | order_date | total_amount
+-------------+------------+-------------
+ Alice Brown | 2025-01-15 | 250.00
+ Alice Brown | 2025-02-20 | 120.00
+ David Green | 2025-04-10 | 310.00
+
+(3 rows)
+
+==================================================
+22. ONE-TO-ONE RELATIONSHIP
+==================================================
+
+Query:
+SELECT u.username, up.first_name, up.last_name, up.phone
+FROM users_lab14 u
+LEFT JOIN user_profiles_lab14 up
+    ON u.user_id = up.user_id
+ORDER BY u.user_id;
+
+ username | first_name | last_name | phone
+----------+------------+-----------+----------
+ alice_b  | Alice      | Brown     | 555-0101
+ bob_s    | Bob        | Smith     | 555-0102
+ carol_w  | NULL       | NULL      | NULL
+
+(3 rows)
+
+==================================================
+23. ONE-TO-MANY RELATIONSHIP
+==================================================
+
+Query:
+SELECT a.author_name, b.title, b.publication_year
+FROM authors_lab14 a
+INNER JOIN books_lab14 b
+    ON a.author_id = b.author_id
+ORDER BY a.author_name, b.publication_year;
+
+ author_name  | title               | publication_year
+--------------+---------------------+-----------------
+ George Orwell| Animal Farm         | 1945
+ George Orwell| 1984                | 1949
+ Jane Austen  | Pride and Prejudice | 1813
+
+(3 rows)
+
+==================================================
+24. MANY-TO-MANY RELATIONSHIP
+==================================================
+
+Query:
+SELECT s.student_name, c.course_name, e.enrollment_date, e.grade
+FROM students_lab14 s
+INNER JOIN enrollments_lab14 e
+    ON s.student_id = e.student_id
+INNER JOIN courses_lab14 c
+    ON e.course_id = c.course_id
+WHERE e.grade IS NOT NULL
+ORDER BY s.student_name, c.course_name;
+
+ student_name      | course_name        | enrollment_date | grade
+-------------------+--------------------+-----------------+-------
+ Aibek Erkinov     | Database Systems   | 2025-01-10      | 90.00
+ Aibek Erkinov     | Python Programming | 2025-01-12      | 85.00
+ Kamila Farkhatova | Database Systems   | 2025-01-15      | 95.00
+ Meerim Bekova     | Python Programming | 2025-02-01      | 88.00
+
+(4 rows)
+
+==================================================
+25. INDEXES
+==================================================
+
+Commands:
+CREATE INDEX idx_orders_lab14_customer_id
+    ON orders_lab14(customer_id);
+
+Result: CREATE INDEX
+
+CREATE INDEX idx_order_items_lab14_order_id
+    ON order_items_lab14(order_id);
+
+Result: CREATE INDEX
+
+CREATE INDEX idx_order_items_lab14_product_id
+    ON order_items_lab14(product_id);
+
+Result: CREATE INDEX
+
+==================================================
+26. TABLE ALIASES
+==================================================
+
+Query:
+SELECT c.name, o.order_date
+FROM customers_lab14 c
+INNER JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id
+ORDER BY c.name, o.order_date;
+
+    name     | order_date
+-------------+------------
+ Alice Brown | 2025-01-15
+ Alice Brown | 2025-02-20
+ Bob Smith   | 2025-03-05
+ David Green | 2025-04-10
+
+(4 rows)
+
+==================================================
+27. CARTESIAN PRODUCT
+==================================================
+
+Query:
+SELECT c.name, o.order_date
+FROM customers_lab14 c, orders_lab14 o;
+
+Result: 20 rows.
+
+Each of the 4 customers is combined with each of the 5 orders.
+
+==================================================
+28. CORRECT JOIN CONDITION
+==================================================
+
+Query:
+SELECT c.name, o.order_date
+FROM customers_lab14 c
+INNER JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id
+ORDER BY c.name, o.order_date;
+
+    name     | order_date
+-------------+------------
+ Alice Brown | 2025-01-15
+ Alice Brown | 2025-02-20
+ Bob Smith   | 2025-03-05
+ David Green | 2025-04-10
+
+(4 rows)
+
+==================================================
+29. CUSTOMERS WITHOUT ORDERS
+==================================================
+
+Query:
+SELECT c.name
+FROM customers_lab14 c
+LEFT JOIN orders_lab14 o
+    ON c.customer_id = o.customer_id
+WHERE o.order_id IS NULL
+ORDER BY c.customer_id;
+
+    name
+-------------
+ Carol White
+
+(1 row)
+
+==================================================
+30. ORDERS WITHOUT MATCHING CUSTOMERS
+==================================================
+
+Query:
+SELECT o.order_id, o.customer_id, o.order_date, o.total_amount
+FROM orders_lab14 o
+LEFT JOIN customers_lab14 c
+    ON c.customer_id = o.customer_id
+WHERE c.customer_id IS NULL
+ORDER BY o.order_id;
+
+ order_id | customer_id | order_date | total_amount
+----------+-------------+------------+-------------
+ 5        | 99          | 2025-05-01 | 50.00
+
+(1 row)
