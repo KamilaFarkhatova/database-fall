@@ -1,0 +1,197 @@
+Lab 11 — Basic Data Operations
+
+============================================================
+1. Create Students_lab11 table
+============================================================
+
+Command:
+CREATE TABLE Students_lab11 (
+    student_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    birth_date DATE
+);
+
+Output:
+CREATE TABLE
+
+============================================================
+2. Insert one student
+============================================================
+
+Command:
+INSERT INTO Students_lab11 (first_name, last_name, birth_date)
+VALUES ('Kamila', 'Farkhatova', '2006-12-04');
+
+Output:
+INSERT 0 1
+
+============================================================
+3. Insert multiple students
+============================================================
+
+Command:
+INSERT INTO Students_lab11 (first_name, last_name, birth_date)
+VALUES
+    ('Erbol', 'Mederbek', '2005-12-25'),
+    ('Asylbek', 'Turdaliev', '2006-07-21'),
+    ('Jibek', 'Karimova', '2006-05-05');
+
+Output:
+INSERT 0 3
+
+============================================================
+4. Select all students
+============================================================
+
+Command:
+SELECT * FROM Students_lab11;
+
+Output:
+ student_id | first_name | last_name  | birth_date
+------------+------------+------------+------------
+          2 | Kamila     | Farkhatova | 2006-12-04
+          3 | Erbol      | Mederbek   | 2005-12-25
+          4 | Asylbek    | Turdaliev  | 2006-07-21
+          5 | Jibek      | Karimova   | 2006-05-05
+(4 rows)
+
+============================================================
+5. Update Erbol's birth date
+============================================================
+
+Command:
+UPDATE Students_lab11
+SET birth_date = '2006-12-25'
+WHERE first_name = 'Erbol' AND last_name = 'Mederbek';
+
+Output:
+UPDATE 1
+
+Command:
+SELECT * FROM Students_lab11;
+
+Output:
+ student_id | first_name | last_name  | birth_date
+------------+------------+------------+------------
+          2 | Kamila     | Farkhatova | 2006-12-04
+          4 | Asylbek    | Turdaliev  | 2006-07-21
+          5 | Jibek      | Karimova   | 2006-05-05
+          3 | Erbol      | Mederbek   | 2006-12-25
+(4 rows)
+
+============================================================
+6. Delete Jibek
+============================================================
+
+Command:
+DELETE FROM Students_lab11
+WHERE first_name = 'Jibek' AND last_name = 'Karimova';
+
+Output:
+DELETE 1
+
+============================================================
+7. Delete students born before 2006-01-01
+============================================================
+
+Command:
+DELETE FROM Students_lab11
+WHERE birth_date < '2006-01-01';
+
+Output:
+DELETE 0
+
+No records matched the condition.
+
+============================================================
+8. Bulk update using IN
+============================================================
+
+Command:
+UPDATE Students_lab11
+SET last_name = 'Durachkov'
+WHERE last_name IN ('Mederbek', 'Turdaliev');
+
+Output:
+UPDATE 2
+
+Command:
+SELECT * FROM Students_lab11;
+
+Output:
+ student_id | first_name | last_name  | birth_date
+------------+------------+------------+------------
+          2 | Kamila     | Farkhatova | 2006-12-04
+          4 | Asylbek    | Durachkov  | 2006-07-21
+          3 | Erbol      | Durachkov  | 2006-12-25
+(3 rows)
+
+============================================================
+9. Bulk delete using IN
+============================================================
+
+Command:
+DELETE FROM Students_lab11
+WHERE student_id IN (2, 3, 4);
+
+Output:
+DELETE 3
+
+Command:
+SELECT * FROM Students_lab11;
+
+Output:
+ student_id | first_name | last_name | birth_date
+------------+------------+-----------+------------
+(0 rows)
+
+============================================================
+10. Create table for CSV import
+============================================================
+
+Command:
+CREATE TABLE students_copy_lab11 (
+    student_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    birth_date DATE
+);
+
+Output:
+CREATE TABLE
+
+============================================================
+11. Import CSV data
+============================================================
+
+Command:
+\copy students_copy_lab11 (first_name, last_name, birth_date) FROM '/Users/kamilafarkhatova/Documents/database-fall/lab_works/lab-11-basic-data-operations/students.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER ',');
+
+Output:
+COPY 3
+
+============================================================
+12. Select imported records
+============================================================
+
+Command:
+SELECT * FROM students_copy_lab11 ORDER BY student_id;
+
+Output:
+ student_id | first_name | last_name | birth_date
+------------+------------+-----------+------------
+          1 | Nursultan  | Isakov    | 2002-04-10
+          2 | Meerim     | Bekova    | 2003-06-12
+          3 | Tilek      | Usubaliev | 2001-11-05
+(3 rows)
+
+============================================================
+13. Drop temporary import table
+============================================================
+
+Command:
+DROP TABLE students_copy_lab11;
+
+Output:
+DROP TABLE
