@@ -1,0 +1,434 @@
+LAB 12 — QUERYING DATA
+
+==================================================
+1. TABLE STRUCTURES AND DATA
+==================================================
+
+Table: employees_lab12
+
+Columns:
+- id — SERIAL PRIMARY KEY
+- name — VARCHAR(100) NOT NULL
+- department — VARCHAR(50)
+- department_id — INTEGER
+- salary — NUMERIC(10,2)
+- email — VARCHAR(100)
+
+Inserted 7 rows.
+
+ id | name        | department  | department_id | salary    | email
+----+-------------+-------------+---------------+-----------+-------------------------
+ 1  | Alice Brown | Engineering | 3             | 120000.00 | alice.brown@gmail.com
+ 2  | Bob Smith   | Sales       | 5             | 85000.00  | bob.smith@company.com
+ 3  | Anna White  | Engineering | 3             | 95000.00  | anna.white@gmail.com
+ 4  | Brandon Lee | Sales       | 5             | 65000.00  | brandon.lee@gmail.com
+ 5  | David Green | HR          | 7             | 55000.00  | david.green@company.com
+ 6  | Amy Taylor  | Marketing   | 2             | 72000.00  | amy.taylor@gmail.com
+ 7  | Brian Clark | Engineering | 3             | 78000.00  | brian.clark@company.com
+
+(7 rows)
+
+Table: products_lab12
+
+Columns:
+- product_id — SERIAL PRIMARY KEY
+- product_name — VARCHAR(100) NOT NULL
+- category — VARCHAR(50)
+- price — NUMERIC(10,2)
+
+Inserted 7 rows.
+
+ product_id | product_name | category    | price
+------------+--------------+-------------+-------
+ 1          | Strawberry   | Fruit       | 25.00
+ 2          | Blueberry    | Fruit       | 30.00
+ 3          | Blackberry   | Fruit       | 45.00
+ 4          | Laptop       | Electronics | 850.00
+ 5          | Keyboard     | Electronics | 40.00
+ 6          | Notebook     | Stationery  | 5.00
+ 7          | Monitor      | Electronics | 180.00
+
+(7 rows)
+
+Table: customers_lab12
+
+Columns:
+- customer_id — SERIAL PRIMARY KEY
+- customer_name — VARCHAR(100) NOT NULL
+- city — VARCHAR(50)
+
+Inserted 4 rows.
+
+ customer_id | customer_name | city
+-------------+---------------+---------
+ 1           | Brad Miller   | Bishkek
+ 2           | Brandon Scott | Osh
+ 3           | Sarah Johnson | Bishkek
+ 4           | Brian Wilson  | Karakol
+
+(4 rows)
+
+Table: users_lab12
+
+Columns:
+- id — SERIAL PRIMARY KEY
+- first_name — VARCHAR(50)
+- last_name — VARCHAR(50)
+- email — VARCHAR(100)
+
+Inserted 6 rows.
+
+ id | first_name | last_name | email
+----+------------+-----------+------------------------
+ 1  | Alice      | Brown     | alice.brown@gmail.com
+ 2  | Bob        | Smith     | bob.smith@company.com
+ 3  | Anna       | White     | anna.white@gmail.com
+ 4  | David      | Green     | david.green@gmail.com
+ 5  | Test       | Invalid   | not-an-email
+ 6  | Amy        | Taylor    | AMY.TAYLOR@EXAMPLE.COM
+
+(6 rows)
+
+Table: sales_lab12
+
+Columns:
+- sale_id — SERIAL PRIMARY KEY
+- employee_id — INTEGER REFERENCES employees_lab12(id)
+- amount — NUMERIC(10,2)
+
+Inserted 6 rows.
+
+ sale_id | employee_id | amount
+---------+-------------+---------
+ 1       | 1           | 1500.00
+ 2       | 1           | 800.00
+ 3       | 2           | 2000.00
+ 4       | 3           | 1200.00
+ 5       | 4           | 500.00
+ 6       | 6           | 2500.00
+
+(6 rows)
+
+==================================================
+2. SELECT STATEMENTS
+==================================================
+
+Query:
+SELECT * FROM employees_lab12;
+
+Result:
+
+ id |    name     | department  | department_id |  salary   |          email
+----+-------------+-------------+---------------+-----------+-------------------------
+  1 | Alice Brown | Engineering |             3 | 120000.00 | alice.brown@gmail.com
+  2 | Bob Smith   | Sales       |             5 |  85000.00 | bob.smith@company.com
+  3 | Anna White  | Engineering |             3 |  95000.00 | anna.white@gmail.com
+  4 | Brandon Lee | Sales       |             5 |  65000.00 | brandon.lee@gmail.com
+  5 | David Green | HR          |             7 |  55000.00 | david.green@company.com
+  6 | Amy Taylor  | Marketing   |             2 |  72000.00 | amy.taylor@gmail.com
+  7 | Brian Clark | Engineering |             3 |  78000.00 | brian.clark@company.com
+
+(7 rows)
+
+
+Query:
+SELECT name, department FROM employees_lab12;
+
+Result:
+
+    name     | department
+-------------+-------------
+ Alice Brown | Engineering
+ Bob Smith   | Sales
+ Anna White  | Engineering
+ Brandon Lee | Sales
+ David Green | HR
+ Amy Taylor  | Marketing
+ Brian Clark | Engineering
+
+(7 rows)
+
+
+Query:
+SELECT name, salary, salary * 0.10 AS potential_bonus
+FROM employees_lab12;
+
+Result:
+
+    name     |  salary   | potential_bonus
+-------------+-----------+-----------------
+ Alice Brown | 120000.00 |      12000.0000
+ Bob Smith   |  85000.00 |       8500.0000
+ Anna White  |  95000.00 |       9500.0000
+ Brandon Lee |  65000.00 |       6500.0000
+ David Green |  55000.00 |       5500.0000
+ Amy Taylor  |  72000.00 |       7200.0000
+ Brian Clark |  78000.00 |       7800.0000
+
+(7 rows)
+==================================================
+3. WHERE CONDITIONS
+==================================================
+
+Query:
+SELECT name, salary
+FROM employees_lab12
+WHERE department = 'Sales';
+
+Result:
+
+ name        | salary
+-------------+---------
+ Bob Smith   | 85000.00
+ Brandon Lee | 65000.00
+
+(2 rows)
+
+Query:
+SELECT name
+FROM employees_lab12
+WHERE salary > 75000 AND department = 'Engineering';
+
+Result:
+
+ name
+-------------
+ Alice Brown
+ Anna White
+ Brian Clark
+
+(3 rows)
+
+Query:
+SELECT product_name, price
+FROM products_lab12
+WHERE price BETWEEN 20 AND 50;
+
+Result:
+
+ product_name | price
+--------------+-------
+ Strawberry   | 25.00
+ Blueberry    | 30.00
+ Blackberry   | 45.00
+ Keyboard     | 40.00
+
+(4 rows)
+
+==================================================
+4. LIKE AND ILIKE
+==================================================
+
+Query:
+SELECT customer_name
+FROM customers_lab12
+WHERE customer_name LIKE 'Bra%';
+
+Result:
+
+ customer_name
+---------------
+ Brad Miller
+ Brandon Scott
+
+(2 rows)
+
+Query:
+SELECT product_name
+FROM products_lab12
+WHERE product_name LIKE '%berry';
+
+Result:
+
+ product_name
+--------------
+ Strawberry
+ Blueberry
+ Blackberry
+
+(3 rows)
+
+Query:
+SELECT email
+FROM users_lab12
+WHERE email ILIKE '%gmail.com';
+
+Result:
+
+ email
+-----------------------
+ alice.brown@gmail.com
+ anna.white@gmail.com
+ david.green@gmail.com
+
+(3 rows)
+
+==================================================
+5. REGULAR EXPRESSIONS
+==================================================
+
+Query:
+SELECT name
+FROM employees_lab12
+WHERE name ~ '^[AB]';
+
+Result:
+
+    name
+-------------
+ Alice Brown
+ Bob Smith
+ Anna White
+ Brandon Lee
+ Amy Taylor
+ Brian Clark
+(6 rows)
+
+
+Query:
+SELECT email
+FROM users_lab12
+WHERE email ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$';
+
+Result:
+
+         email
+------------------------
+ alice.brown@gmail.com
+ bob.smith@company.com
+ anna.white@gmail.com
+ david.green@gmail.com
+ AMY.TAYLOR@EXAMPLE.COM
+(5 rows)
+
+The invalid email address 'not-an-email' was excluded.
+
+==================================================
+6. IN AND EXISTS
+==================================================
+
+Query:
+SELECT name, department
+FROM employees_lab12
+WHERE department_id IN (3, 5, 7);
+
+Result:
+
+    name     | department
+-------------+-------------
+ Alice Brown | Engineering
+ Bob Smith   | Sales
+ Anna White  | Engineering
+ Brandon Lee | Sales
+ David Green | HR
+ Brian Clark | Engineering
+(6 rows)
+
+
+Query:
+SELECT name
+FROM employees_lab12
+WHERE id IN (
+    SELECT employee_id
+    FROM sales_lab12
+    WHERE amount > 1000
+);
+
+Result:
+
+    name
+-------------
+ Alice Brown
+ Bob Smith
+ Anna White
+ Amy Taylor
+(4 rows)
+
+
+Query:
+SELECT name
+FROM employees_lab12 e
+WHERE EXISTS (
+    SELECT 1
+    FROM sales_lab12 s
+    WHERE s.employee_id = e.id
+      AND s.amount > 1000
+);
+
+Result:
+
+    name
+-------------
+ Alice Brown
+ Bob Smith
+ Anna White
+ Amy Taylor
+(4 rows)
+
+The IN and EXISTS queries returned the same four employees.
+
+==================================================
+7. CASE STATEMENT
+==================================================
+
+Query:
+SELECT name, salary,
+    CASE
+        WHEN salary > 100000 THEN 'Senior'
+        WHEN salary BETWEEN 60000 AND 100000 THEN 'Mid-Level'
+        ELSE 'Junior'
+    END AS employee_level
+FROM employees_lab12;
+
+Result:
+
+ name        | salary    | employee_level
+-------------+-----------+---------------
+ Alice Brown | 120000.00| Senior
+ Bob Smith   | 85000.00 | Mid-Level
+ Anna White  | 95000.00 | Mid-Level
+ Brandon Lee | 65000.00 | Mid-Level
+ David Green | 55000.00 | Junior
+ Amy Taylor  | 72000.00 | Mid-Level
+ Brian Clark | 78000.00 | Mid-Level
+
+(7 rows)
+
+==================================================
+8. COMMON TABLE EXPRESSION (CTE)
+==================================================
+
+Query:
+WITH department_averages AS (
+    SELECT department, AVG(salary) AS avg_salary
+    FROM employees_lab12
+    GROUP BY department
+)
+SELECT e.name, e.salary, e.department, da.avg_salary
+FROM employees_lab12 e
+JOIN department_averages da
+    ON e.department = da.department
+WHERE e.salary > da.avg_salary;
+
+Result:
+
+ name        | salary    | department  | avg_salary
+-------------+-----------+-------------+--------------------
+ Alice Brown | 120000.00| Engineering | 97666.666666666667
+ Bob Smith   | 85000.00 | Sales       | 75000.000000000000
+
+(2 rows)
+
+==================================================
+9. CLEANUP
+==================================================
+
+Commands executed:
+
+DROP TABLE sales_lab12;
+DROP TABLE users_lab12;
+DROP TABLE customers_lab12;
+DROP TABLE products_lab12;
+DROP TABLE employees_lab12;
+
+All five Lab 12 tables were successfully dropped.
