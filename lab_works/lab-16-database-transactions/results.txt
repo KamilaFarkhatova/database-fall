@@ -1,0 +1,400 @@
+
+==================================================
+LAB 16 — TRANSACTIONS AND ACID PROPERTIES
+==================================================
+
+==================================================
+1. TABLE CREATION
+==================================================
+
+The following tables were created successfully:
+
+1. accounts_lab16
+2. customers_lab16
+3. orders_lab16
+4. products_lab16
+5. inventory_lab16
+6. order_items_lab16
+7. logs_lab16
+8. audit_log_lab16
+9. users_lab16
+10. user_preferences_lab16
+
+Initial data insertion:
+
+accounts_lab16:
+INSERT 0 2
+
+customers_lab16:
+INSERT 0 1
+
+inventory_lab16:
+INSERT 0 2
+
+==================================================
+2. TABLE LIST
+==================================================
+
+Command:
+\dt
+
+Tables displayed by PostgreSQL:
+
+accounts_lab16
+audit_log_lab16
+customers
+customers_lab16
+employee
+inventory_lab16
+logs_lab16
+order_items
+order_items_lab16
+orders
+orders_lab16
+products
+products_lab16
+user_preferences_lab16
+users
+users1
+users_lab16
+
+(17 rows)
+
+==================================================
+3. BEGIN, COMMIT AND ROLLBACK
+==================================================
+
+Commands:
+BEGIN;
+ROLLBACK;
+
+BEGIN TRANSACTION;
+ROLLBACK;
+
+START TRANSACTION;
+ROLLBACK;
+
+Results:
+BEGIN
+ROLLBACK
+BEGIN
+ROLLBACK
+START TRANSACTION
+ROLLBACK
+
+The commands demonstrate starting and cancelling
+transactions.
+
+==================================================
+4. COMMIT EXAMPLE
+==================================================
+
+Transaction:
+Transfer 100 from account 1 to account 2.
+
+Results:
+UPDATE 1
+UPDATE 1
+COMMIT
+
+Account 1 balance after transfer: 1900.00
+Account 2 balance after transfer: 1100.00
+
+==================================================
+5. ROLLBACK EXAMPLE
+==================================================
+
+The transaction deducted 100 from account 1 and added
+100 to account 2, then rolled back the changes.
+
+Results:
+UPDATE 1
+UPDATE 1
+ROLLBACK
+
+The account balances remained unchanged by this transaction.
+
+==================================================
+6. TRANSFER 500
+==================================================
+
+Query:
+SELECT balance
+FROM accounts_lab16
+WHERE account_id = 1;
+
+ balance
+---------
+ 1900.00
+
+(1 row)
+
+The transaction transferred 500 from account 1 to account 2.
+
+Results:
+UPDATE 1
+UPDATE 1
+COMMIT
+
+Account 1 balance: 1400.00
+Account 2 balance: 1600.00
+
+==================================================
+7. ATOMICITY
+==================================================
+
+Operations:
+1. Insert an order.
+2. Insert an order item.
+3. Decrease inventory stock by 2.
+
+Results:
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+COMMIT
+
+All operations were committed as one transaction.
+
+==================================================
+8. CONSISTENCY
+==================================================
+
+A customer and an associated order were inserted in one
+transaction.
+
+Results:
+INSERT 0 1
+INSERT 0 1
+COMMIT
+
+The foreign key relationship was satisfied.
+
+==================================================
+9. READ UNCOMMITTED
+==================================================
+
+Query:
+SELECT * FROM accounts_lab16;
+
+ account_id | balance
+------------+---------
+ 1          | 1400.00
+ 2          | 1600.00
+
+(2 rows)
+
+Result:
+COMMIT
+
+==================================================
+10. READ COMMITTED
+==================================================
+
+The query WHERE balance > 1000 was executed twice.
+
+Both executions returned:
+
+ account_id | balance
+------------+---------
+ 1          | 1400.00
+ 2          | 1600.00
+
+(2 rows)
+
+Result:
+COMMIT
+
+==================================================
+11. REPEATABLE READ
+==================================================
+
+The query WHERE balance > 1000 was executed twice.
+Both executions returned the same rows:
+
+ account_id | balance
+------------+---------
+ 1          | 1400.00
+ 2          | 1600.00
+
+(2 rows)
+
+Result:
+COMMIT
+
+==================================================
+12. SERIALIZABLE
+==================================================
+
+The transaction selected the accounts and increased
+their balances by 5%.
+
+Results:
+UPDATE 2
+COMMIT
+
+Account 1 balance: 1470.00
+Account 2 balance: 1680.00
+
+==================================================
+13. SESSION-LEVEL ISOLATION
+==================================================
+
+Command:
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+Result:
+SET
+
+Query:
+SELECT * FROM accounts_lab16;
+
+ account_id | balance
+------------+---------
+ 1          | 1470.00
+ 2          | 1680.00
+
+(2 rows)
+
+Result:
+COMMIT
+
+==================================================
+14. SAVEPOINT
+==================================================
+
+The transaction inserted a customer, created a savepoint,
+rolled back an order insert, then inserted another order.
+
+Results:
+INSERT 0 1
+SAVEPOINT
+INSERT 0 1
+ROLLBACK
+INSERT 0 1
+COMMIT
+
+==================================================
+15. MULTIPLE SAVEPOINTS
+==================================================
+
+The transaction inserted Laptop and Mouse, then created
+savepoints sp1 and sp2.
+
+The CHECK constraint requires price > 0.
+
+After rolling back to sp2, the Keyboard insert succeeded.
+
+Results:
+INSERT 0 1
+SAVEPOINT
+INSERT 0 1
+SAVEPOINT
+ROLLBACK
+INSERT 0 1
+COMMIT
+
+==================================================
+16. RELEASING SAVEPOINTS
+==================================================
+
+Two log messages were inserted in a transaction.
+
+Results:
+INSERT 0 1
+SAVEPOINT
+INSERT 0 1
+RELEASE
+COMMIT
+
+==================================================
+17. SHORT TRANSACTION
+==================================================
+
+The transaction decreased inventory stock by 1 and inserted
+an order item.
+
+Results:
+UPDATE 1
+INSERT 0 1
+COMMIT
+
+==================================================
+18. ERROR HANDLING
+==================================================
+
+The DO block checks the account balance before transferring
+100 between accounts.
+
+The exception handler catches an insufficient-funds
+exception and reports a notice.
+
+Result:
+DO
+
+==================================================
+19. ISOLATION LEVEL BEST PRACTICES
+==================================================
+
+SERIALIZABLE transaction:
+BEGIN
+COMMIT
+
+READ COMMITTED transaction:
+BEGIN
+COMMIT
+
+==================================================
+20. SAVEPOINT FOR ORDER ITEMS
+==================================================
+
+The transaction inserted an order, created savepoint
+before_items, and inserted two order items.
+
+Results:
+INSERT 0 1
+SAVEPOINT
+INSERT 0 1
+INSERT 0 1
+COMMIT
+
+==================================================
+21. MONITOR BLOCKING TRANSACTIONS
+==================================================
+
+The query checks pg_locks and pg_stat_activity for blocked
+and blocking transactions.
+
+Result:
+
+ blocked_pid | blocked_user | blocking_pid | blocking_user | blocked_statement
+-------------+--------------+--------------+---------------+------------------
+(0 rows)
+
+No blocking transactions were returned.
+
+==================================================
+22. EXPLICIT TRANSACTION CONTROL
+==================================================
+
+The transaction inserted:
+1. An audit log entry.
+2. A user.
+3. A user preference.
+
+Results:
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+COMMIT
+
+==================================================
+23. AUTOCOMMIT EXAMPLE
+==================================================
+
+Two independent inserts were executed without an explicit
+transaction.
+
+Results:
+INSERT 0 1
+INSERT 0 1
