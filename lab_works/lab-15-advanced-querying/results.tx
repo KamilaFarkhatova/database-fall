@@ -1,0 +1,620 @@
+
+==================================================
+LAB 15 — ADVANCED QUERYING
+==================================================
+
+==================================================
+1. TABLE LIST
+==================================================
+
+Command:
+\dt
+
+Tables from Lab 15:
+employees_lab15
+orders_lab15
+pivoted_sales_lab15
+sales_lab15
+warehouse_1_lab15
+warehouse_2_lab15
+
+The terminal showed 13 tables in total, including
+tables from previous labs.
+
+==================================================
+2. EMPLOYEES_LAB15
+==================================================
+
+Command:
+SELECT * FROM employees_lab15 ORDER BY employee_id;
+
+ employee_id | first_name | last_name | department  | salary     | manager_id | tenure
+-------------+------------+-----------+-------------+------------+------------+-------
+ 1           | Maria      | Garcia    | Management  | 130000.00  | NULL       | 15
+ 2           | James      | Wilson    | Engineering | 100000.00  | 1          | 10
+ 3           | Sophia     | Martin    | Sales       | 85000.00   | 1          | 7
+ 4           | Daniel     | Young     | Engineering | 90000.00   | 2          | 6
+ 5           | Olivia     | King      | Sales       | 70000.00   | 3          | 4
+ 6           | Aiden      | Scott     | Engineering | 75000.00   | 2          | 3
+ 7           | Emma       | Davis     | HR          | 60000.00   | 1          | 8
+ 8           | Noah       | Taylor    | Sales       | 65000.00   | 3          | 2
+
+(8 rows)
+
+==================================================
+3. ORDERS_LAB15
+==================================================
+
+Command:
+SELECT * FROM orders_lab15 ORDER BY order_id;
+
+ order_id | product_name | region_id | amount    | status          | order_date
+----------+--------------+-----------+-----------+-----------------+------------
+ 1        | Laptop       | 1         | 250000.00 | High Priority   | 2024-01-15
+ 2        | Keyboard     | 1         | 45000.00  | Medium Priority | 2024-03-20
+ 3        | Monitor      | 2         | 180000.00 | Low Priority    | 2024-04-12
+ 4        | Laptop       | 2         | 300000.00 | High Priority   | 2023-06-10
+ 5        | Mouse        | 3         | 25000.00  | Low Priority    | 2023-09-18
+ 6        | Monitor      | 1         | 210000.00 | Medium Priority | 2024-07-22
+ 7        | Keyboard     | 3         | 50000.00  | High Priority   | 2022-11-05
+ 8        | Mouse        | 2         | 30000.00  | Medium Priority | 2022-12-11
+
+(8 rows)
+
+==================================================
+4. WAREHOUSE_1_LAB15
+==================================================
+
+Command:
+SELECT * FROM warehouse_1_lab15 ORDER BY product_id;
+
+ product_id | product_name | quantity
+------------+--------------+---------
+ 1          | Laptop       | 10
+ 2          | Keyboard     | 0
+ 3          | Mouse        | 25
+ 4          | Monitor      | 0
+ 5          | Webcam       | 12
+
+(5 rows)
+
+==================================================
+5. WAREHOUSE_2_LAB15
+==================================================
+
+Command:
+SELECT * FROM warehouse_2_lab15 ORDER BY product_id;
+
+ product_id | product_name | quantity
+------------+--------------+---------
+ 2          | Keyboard     | 0
+ 3          | Mouse        | 0
+ 4          | Monitor      | 0
+ 5          | Webcam       | 8
+ 6          | Headphones   | 15
+
+(5 rows)
+
+==================================================
+6. SALES_LAB15
+==================================================
+
+Command:
+SELECT * FROM sales_lab15 ORDER BY sale_id;
+
+ sale_id | product_name | year | sales_amount
+---------+--------------+------+-------------
+ 1       | Laptop       | 2022 | 100000.00
+ 2       | Laptop       | 2023 | 125000.00
+ 3       | Laptop       | 2024 | 150000.00
+ 4       | Keyboard     | 2022 | 20000.00
+ 5       | Keyboard     | 2023 | 25000.00
+ 6       | Keyboard     | 2024 | 30000.00
+ 7       | Monitor      | 2022 | 50000.00
+ 8       | Monitor      | 2023 | 60000.00
+ 9       | Monitor      | 2024 | 75000.00
+
+(9 rows)
+
+==================================================
+7. PIVOTED_SALES_LAB15
+==================================================
+
+Command:
+SELECT * FROM pivoted_sales_lab15 ORDER BY product_name;
+
+ product_name | year_2022 | year_2023 | year_2024
+--------------+-----------+-----------+-----------
+ Keyboard     | 20000.00  | 25000.00  | 30000.00
+ Laptop       | 100000.00 | 125000.00 | 150000.00
+ Monitor      | 50000.00  | 60000.00  | 75000.00
+
+(3 rows)
+
+==================================================
+8. SUBQUERIES
+==================================================
+
+Query:
+SELECT first_name, last_name, salary
+FROM employees_lab15
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employees_lab15
+)
+ORDER BY salary DESC;
+
+ first_name | last_name | salary
+------------+-----------+-----------
+ Maria      | Garcia    | 130000.00
+ James      | Wilson    | 100000.00
+ Daniel     | Young     | 90000.00
+ Sophia     | Martin    | 85000.00
+
+(4 rows)
+
+Query:
+SELECT first_name, last_name, department, salary
+FROM employees_lab15
+WHERE department IN (
+    SELECT department
+    FROM employees_lab15
+    GROUP BY department
+    HAVING AVG(salary) > 80000
+)
+ORDER BY department, salary DESC;
+
+ first_name | last_name | department  | salary
+------------+-----------+-------------+-----------
+ James      | Wilson    | Engineering | 100000.00
+ Daniel     | Young     | Engineering | 90000.00
+ Aiden      | Scott     | Engineering | 75000.00
+ Maria      | Garcia    | Management  | 130000.00
+
+(4 rows)
+
+==================================================
+9. COMMON TABLE EXPRESSIONS
+==================================================
+
+Query:
+WITH regional_sales AS (
+    SELECT region_id, SUM(amount) AS total_sales
+    FROM orders_lab15
+    GROUP BY region_id
+)
+SELECT region_id, total_sales
+FROM regional_sales
+WHERE total_sales > 100000
+ORDER BY region_id;
+
+ region_id | total_sales
+-----------+-------------
+ 1         | 505000.00
+ 2         | 510000.00
+
+(2 rows)
+
+Query:
+WITH department_averages AS (
+    SELECT department, AVG(salary) AS avg_salary
+    FROM employees_lab15
+    GROUP BY department
+)
+SELECT e.first_name, e.last_name, e.department, e.salary, da.avg_salary
+FROM employees_lab15 e
+JOIN department_averages da
+    ON e.department = da.department
+WHERE e.salary > da.avg_salary
+ORDER BY e.department, e.salary DESC;
+
+ first_name | last_name | department  | salary    | avg_salary
+------------+-----------+-------------+-----------+--------------------
+ James      | Wilson    | Engineering | 100000.00 | 88333.333333333333
+ Daniel     | Young     | Engineering | 90000.00  | 88333.333333333333
+ Sophia     | Martin    | Sales       | 85000.00  | 73333.333333333333
+
+(3 rows)
+
+==================================================
+10. RECURSIVE QUERY
+==================================================
+
+Query:
+WITH RECURSIVE org_chart AS (
+    SELECT employee_id, first_name, last_name, manager_id,
+           1 AS hierarchy_level
+    FROM employees_lab15
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    SELECT e.employee_id, e.first_name, e.last_name, e.manager_id,
+           oc.hierarchy_level + 1
+    FROM employees_lab15 e
+    INNER JOIN org_chart oc
+        ON e.manager_id = oc.employee_id
+)
+SELECT *
+FROM org_chart
+ORDER BY hierarchy_level, employee_id;
+
+ employee_id | first_name | last_name | manager_id | hierarchy_level
+-------------+------------+-----------+------------+----------------
+ 1           | Maria      | Garcia    | NULL       | 1
+ 2           | James      | Wilson    | 1          | 2
+ 3           | Sophia     | Martin    | 1          | 2
+ 7           | Emma       | Davis     | 1          | 2
+ 4           | Daniel     | Young     | 2          | 3
+ 5           | Olivia     | King      | 3          | 3
+ 6           | Aiden      | Scott     | 2          | 3
+ 8           | Noah       | Taylor    | 3          | 3
+
+(8 rows)
+
+==================================================
+11. SET OPERATIONS
+==================================================
+
+UNION
+
+Query:
+SELECT product_name FROM warehouse_1_lab15
+UNION
+SELECT product_name FROM warehouse_2_lab15
+ORDER BY product_name;
+
+ product_name
+--------------
+ Headphones
+ Keyboard
+ Laptop
+ Monitor
+ Mouse
+ Webcam
+
+(6 rows)
+
+UNION ALL
+
+Query:
+SELECT product_name FROM warehouse_1_lab15
+UNION ALL
+SELECT product_name FROM warehouse_2_lab15
+ORDER BY product_name;
+
+ product_name
+--------------
+ Headphones
+ Keyboard
+ Keyboard
+ Laptop
+ Monitor
+ Monitor
+ Mouse
+ Mouse
+ Webcam
+ Webcam
+
+(10 rows)
+
+INTERSECT
+
+Query:
+SELECT product_id FROM warehouse_1_lab15 WHERE quantity = 0
+INTERSECT
+SELECT product_id FROM warehouse_2_lab15 WHERE quantity = 0
+ORDER BY product_id;
+
+ product_id
+------------
+ 2
+ 4
+
+(2 rows)
+
+EXCEPT
+
+Query:
+SELECT product_id FROM warehouse_1_lab15
+EXCEPT
+SELECT product_id FROM warehouse_2_lab15
+ORDER BY product_id;
+
+ product_id
+------------
+ 1
+
+(1 row)
+
+==================================================
+12. WINDOW FUNCTIONS
+==================================================
+
+Query:
+SELECT first_name, last_name, department, salary,
+       RANK() OVER (
+           PARTITION BY department
+           ORDER BY salary DESC
+       ) AS dept_salary_rank
+FROM employees_lab15
+ORDER BY department, dept_salary_rank;
+
+ first_name | last_name | department  | salary    | dept_salary_rank
+------------+-----------+-------------+-----------+-----------------
+ James      | Wilson    | Engineering | 100000.00 | 1
+ Daniel     | Young     | Engineering | 90000.00  | 2
+ Aiden      | Scott     | Engineering | 75000.00  | 3
+ Emma       | Davis     | HR          | 60000.00  | 1
+ Maria      | Garcia    | Management  | 130000.00 | 1
+ Sophia     | Martin    | Sales       | 85000.00  | 1
+ Olivia     | King      | Sales       | 70000.00  | 2
+ Noah       | Taylor    | Sales       | 65000.00  | 3
+
+(8 rows)
+
+ROW_NUMBER, RANK AND DENSE_RANK
+
+ first_name | last_name | department  | salary    | row_num | salary_rank | dense_salary_rank
+------------+-----------+-------------+-----------+---------+-------------+------------------
+ James      | Wilson    | Engineering | 100000.00 | 1       | 1           | 1
+ Daniel     | Young     | Engineering | 90000.00  | 2       | 2           | 2
+ Aiden      | Scott     | Engineering | 75000.00  | 3       | 3           | 3
+ Emma       | Davis     | HR          | 60000.00  | 1       | 1           | 1
+ Maria      | Garcia    | Management  | 130000.00 | 1       | 1           | 1
+ Sophia     | Martin    | Sales       | 85000.00  | 1       | 1           | 1
+ Olivia     | King      | Sales       | 70000.00  | 2       | 2           | 2
+ Noah       | Taylor    | Sales       | 65000.00  | 3       | 3           | 3
+
+(8 rows)
+
+Department totals and averages
+
+ first_name | last_name | department  | salary    | department_total_salary | department_avg_salary
+------------+-----------+-------------+-----------+-------------------------+-----------------------
+ James      | Wilson    | Engineering | 100000.00 | 265000.00               | 88333.333333333333
+ Daniel     | Young     | Engineering | 90000.00  | 265000.00               | 88333.333333333333
+ Aiden      | Scott     | Engineering | 75000.00  | 265000.00               | 88333.333333333333
+ Emma       | Davis     | HR          | 60000.00  | 60000.00                | 60000.000000000000
+ Maria      | Garcia    | Management  | 130000.00 | 130000.00               | 130000.000000000000
+ Sophia     | Martin    | Sales       | 85000.00  | 220000.00               | 73333.333333333333
+ Olivia     | King      | Sales       | 70000.00  | 220000.00               | 73333.333333333333
+ Noah       | Taylor    | Sales       | 65000.00  | 220000.00               | 73333.333333333333
+
+(8 rows)
+
+LAG and LEAD
+
+ first_name | last_name | salary    | previous_salary | next_salary
+------------+-----------+-----------+-----------------+------------
+ Emma       | Davis     | 60000.00  | NULL            | 65000.00
+ Noah       | Taylor    | 65000.00  | 60000.00        | 70000.00
+ Olivia     | King      | 70000.00  | 65000.00        | 75000.00
+ Aiden      | Scott     | 75000.00  | 70000.00        | 85000.00
+ Sophia     | Martin    | 85000.00  | 75000.00        | 90000.00
+ Daniel     | Young     | 90000.00  | 85000.00        | 100000.00
+ James      | Wilson    | 100000.00 | 90000.00        | 130000.00
+ Maria      | Garcia    | 130000.00 | 100000.00       | NULL
+
+(8 rows)
+
+==================================================
+13. PIVOT
+==================================================
+
+Query:
+SELECT product_name,
+       SUM(CASE WHEN year = 2022 THEN sales_amount ELSE 0 END) AS year_2022,
+       SUM(CASE WHEN year = 2023 THEN sales_amount ELSE 0 END) AS year_2023,
+       SUM(CASE WHEN year = 2024 THEN sales_amount ELSE 0 END) AS year_2024
+FROM sales_lab15
+GROUP BY product_name
+ORDER BY product_name;
+
+ product_name | year_2022 | year_2023 | year_2024
+--------------+-----------+-----------+-----------
+ Keyboard     | 20000.00  | 25000.00  | 30000.00
+ Laptop       | 100000.00 | 125000.00 | 150000.00
+ Monitor      | 50000.00  | 60000.00  | 75000.00
+
+(3 rows)
+
+==================================================
+14. UNPIVOT
+==================================================
+
+Query:
+SELECT product_name, '2022' AS year, year_2022 AS sales_amount
+FROM pivoted_sales_lab15
+UNION ALL
+SELECT product_name, '2023' AS year, year_2023 AS sales_amount
+FROM pivoted_sales_lab15
+UNION ALL
+SELECT product_name, '2024' AS year, year_2024 AS sales_amount
+FROM pivoted_sales_lab15
+ORDER BY product_name, year;
+
+ product_name | year | sales_amount
+--------------+------+-------------
+ Keyboard     | 2022 | 20000.00
+ Keyboard     | 2023 | 25000.00
+ Keyboard     | 2024 | 30000.00
+ Laptop       | 2022 | 100000.00
+ Laptop       | 2023 | 125000.00
+ Laptop       | 2024 | 150000.00
+ Monitor      | 2022 | 50000.00
+ Monitor      | 2023 | 60000.00
+ Monitor      | 2024 | 75000.00
+
+(9 rows)
+
+==================================================
+15. FILTER CLAUSE
+==================================================
+
+Query:
+SELECT employee_id, first_name, last_name, department, salary,
+       SUM(salary) OVER (PARTITION BY department) AS total_dept_salary,
+       AVG(salary) FILTER (WHERE tenure > 5) OVER () AS avg_salary_senior
+FROM employees_lab15
+ORDER BY department, employee_id;
+
+ employee_id | first_name | last_name | department  | salary    | total_dept_salary | avg_salary_senior
+-------------+------------+-----------+-------------+-----------+-------------------+--------------------
+ 2           | James      | Wilson    | Engineering | 100000.00 | 265000.00         | 93000.000000000000
+ 4           | Daniel     | Young     | Engineering | 90000.00  | 265000.00         | 93000.000000000000
+ 6           | Aiden      | Scott     | Engineering | 75000.00  | 265000.00         | 93000.000000000000
+ 7           | Emma       | Davis     | HR          | 60000.00  | 60000.00          | 93000.000000000000
+ 1           | Maria      | Garcia    | Management  | 130000.00 | 130000.00         | 93000.000000000000
+ 3           | Sophia     | Martin    | Sales       | 85000.00  | 220000.00         | 93000.000000000000
+ 5           | Olivia     | King     | Sales       | 70000.00  | 220000.00         | 93000.000000000000
+ 8           | Noah       | Taylor    | Sales       | 65000.00  | 220000.00         | 93000.000000000000
+
+(8 rows)
+
+==================================================
+16. CUSTOM SORTING WITH CASE
+==================================================
+
+Query:
+SELECT product_name, status
+FROM orders_lab15
+ORDER BY
+    CASE status
+        WHEN 'High Priority' THEN 1
+        WHEN 'Medium Priority' THEN 2
+        WHEN 'Low Priority' THEN 3
+        ELSE 4
+    END,
+    product_name;
+
+ product_name | status
+--------------+-----------------
+ Keyboard     | High Priority
+ Laptop       | High Priority
+ Laptop       | High Priority
+ Keyboard     | Medium Priority
+ Monitor      | Medium Priority
+ Mouse        | Medium Priority
+ Monitor      | Low Priority
+ Mouse        | Low Priority
+
+(8 rows)
+
+==================================================
+17. EXPLAIN
+==================================================
+
+Query:
+EXPLAIN
+SELECT first_name, last_name, salary
+FROM employees_lab15
+WHERE department = 'Engineering'
+ORDER BY salary DESC;
+
+QUERY PLAN
+
+Sort (cost=12.38..12.39 rows=1 width=252)
+  Sort Key: salary DESC
+  -> Seq Scan on employees_lab15
+       (cost=0.00..12.38 rows=1 width=252)
+       Filter: ((department)::text = 'Engineering'::text)
+
+(4 rows)
+
+==================================================
+18. EXPLAIN ANALYZE BEFORE INDEX
+==================================================
+
+QUERY PLAN
+
+Sort (cost=12.38..12.39 rows=1 width=252)
+  (actual time=0.109..0.110 rows=3 loops=1)
+  Sort Key: salary DESC
+  Sort Method: quicksort  Memory: 25kB
+  -> Seq Scan on employees_lab15
+       (cost=0.00..12.38 rows=1 width=252)
+       (actual time=0.064..0.067 rows=3 loops=1)
+       Filter: ((department)::text = 'Engineering'::text)
+       Rows Removed by Filter: 5
+Planning Time: 0.165 ms
+Execution Time: 0.147 ms
+
+(8 rows)
+
+==================================================
+19. INDEX CREATION
+==================================================
+
+Command:
+CREATE INDEX idx_employees_lab15_department
+ON employees_lab15(department);
+
+Result:
+CREATE INDEX
+
+==================================================
+20. EXPLAIN ANALYZE AFTER INDEX
+==================================================
+
+QUERY PLAN
+
+Sort (cost=1.11..1.11 rows=1 width=252)
+  (actual time=0.139..0.140 rows=3 loops=1)
+  Sort Key: salary DESC
+  Sort Method: quicksort  Memory: 25kB
+  -> Seq Scan on employees_lab15
+       (cost=0.00..1.10 rows=1 width=252)
+       (actual time=0.049..0.051 rows=3 loops=1)
+       Filter: ((department)::text = 'Engineering'::text)
+       Rows Removed by Filter: 5
+Planning Time: 2.177 ms
+Execution Time: 0.179 ms
+
+(8 rows)
+
+Note:
+PostgreSQL continued to use a sequential scan because the table is small.
+The index was created successfully, but an index scan was not selected.
+
+==================================================
+21. SELECT ONLY REQUIRED COLUMNS
+==================================================
+
+Query:
+SELECT first_name, last_name, salary
+FROM employees_lab15
+WHERE salary > 80000
+ORDER BY salary DESC;
+
+ first_name | last_name | salary
+------------+-----------+-----------
+ Maria      | Garcia    | 130000.00
+ James      | Wilson    | 100000.00
+ Daniel     | Young     | 90000.00
+ Sophia     | Martin    | 85000.00
+
+(4 rows)
+
+==================================================
+22. LIMIT
+==================================================
+
+Query:
+SELECT order_id, product_name, region_id, amount, status
+FROM orders_lab15
+ORDER BY amount DESC
+LIMIT 10;
+
+ order_id | product_name | region_id | amount    | status
+----------+--------------+-----------+-----------+-----------------
+ 4        | Laptop       | 2         | 300000.00 | High Priority
+ 1        | Laptop       | 1         | 250000.00 | High Priority
+ 6        | Monitor      | 1         | 210000.00 | Medium Priority
+ 3        | Monitor      | 2         | 180000.00 | Low Priority
+ 7        | Keyboard     | 3         | 50000.00  | High Priority
+ 2        | Keyboard     | 1         | 45000.00  | Medium Priority
+ 8        | Mouse        | 2         | 30000.00  | Medium Priority
+ 5        | Mouse        | 3         | 25000.00  | Low Priority
+
+(8 rows)
